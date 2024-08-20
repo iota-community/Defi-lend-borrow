@@ -1,26 +1,37 @@
 const hre = require("hardhat");
 
 async function main() {
-  const IToken = await hre.ethers.getContractFactory("IToken");
-  const interestRateModelAddressContract = await hre.ethers.getContractFactory(
+  // Deploy InterestRateModel contract
+  const InterestRateModel = await hre.ethers.getContractFactory(
     "InterestRateModel"
   );
-  const interestRateModelInstance =
-    await interestRateModelAddressContract.deploy(1, 1);
+  const interestRateModelInstance = await InterestRateModel.deploy(1, 1);
+  await interestRateModelInstance.waitForDeployment();
+  const interestRateModelAddress = await interestRateModelInstance.getAddress();
 
-  const MockERC20 = await ethers.getContractFactory("MockERC20");
-  const totalSupply = await ethers.parseUnits("1000", 8); // Deploys with 1000 tokens with 8 decimals
+  // Deploy MockERC20 token contract
+  const MockERC20 = await hre.ethers.getContractFactory("MockERC20");
+  const totalSupply = await hre.ethers.parseUnits("1000", 8); // Deploys with 1000 tokens with 8 decimals
   const token = await MockERC20.deploy("MockERC20", "MTKN", totalSupply);
   await token.waitForDeployment();
   const underlyingAddress = await token.getAddress();
-  const interestRateModelAddress = await interestRateModelInstance.getAddress();
 
+  // Deploy ITokenManager contract
+  const ITokenManager = await hre.ethers.getContractFactory("ITokenManager");
+  const ITokenManagerInstance = await ITokenManager.deploy();
+  await ITokenManagerInstance.waitForDeployment();
+  const ITokenManagerAddress = await ITokenManagerInstance.getAddress();
+
+  // Deploy IToken contract
+  const IToken = await hre.ethers.getContractFactory("IToken");
   const iToken = await IToken.deploy(
     underlyingAddress,
-    interestRateModelAddress
+    interestRateModelAddress,
+    ITokenManagerAddress
   );
   await iToken.waitForDeployment();
   const iTokenAddress = await iToken.getAddress();
+
   console.log("IToken deployed to:", iTokenAddress);
 }
 
