@@ -1,3 +1,5 @@
+import React from "react";
+
 const LendBorrowPlatformDetails = () => {
   return (
     <div className="LendBorrowPlatformDetailsCard">

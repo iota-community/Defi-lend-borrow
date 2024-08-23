@@ -9,14 +9,16 @@ const ConnectWallet = () => {
 
   return (
     <div>
-      <Button
-        className="connect-btn"
-        onClick={() => (!address ? connectWallet() : disconnectWallet())}
-        color="primary"
-        block
-      >
-        {address ? "Disconnect Wallet" : "Connect Wallet"}
-      </Button>
+      {!address && (
+        <Button
+          className="connect-btn"
+          onClick={() => (!address ? connectWallet() : disconnectWallet())}
+          color="primary"
+          block
+        >
+          Connect Wallet
+        </Button>
+      )}
     </div>
   );
 };

@@ -54,9 +54,9 @@ export const WalletProvider = ({ children }) => {
         await changeNetwork();
         const addr = await getSignerAddress();
         const bnbBalance = await getNativeBalance();
-        const tokenBalance = await getTokenBalance();
+        // const tokenBalance = await getTokenBalance();
         setBnbBal(bnbBalance);
-        setTokenBal(tokenBalance);
+        // setTokenBal(tokenBalance);
         setAddress(addr);
       }
     } catch (err) {

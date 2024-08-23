@@ -1,19 +1,52 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import ConnectWallet from "./ConnectWallet";
-import { Navbar, NavbarBrand, Nav } from "reactstrap";
+import {
+  Navbar,
+  NavbarBrand,
+  Nav,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from "reactstrap";
 import { WalletContext } from "../context/WalletContext";
 import formatAddress from "../utils/formats";
 
 export const NavigationBar = () => {
   const { address, tokenBal, bnbBal, disconnectWallet } =
     useContext(WalletContext);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
   return (
     <div>
       <Navbar className="navbar">
-        <NavbarBrand href="/">Defi lend borrow</NavbarBrand>
-        <Nav className="navbar-right">
+        <NavbarBrand href="/">Defi Lend Borrow</NavbarBrand>
+        <Nav className="ml-auto">
           <ConnectWallet />
-          {address && <div>Address : {`${formatAddress(address)}`}</div>}
+          {address && (
+            <Dropdown isOpen={isDropdownOpen} toggle={toggleDropdown}>
+              <DropdownToggle
+                tag="span"
+                onClick={toggleDropdown}
+                data-toggle="dropdown"
+                aria-expanded={isDropdownOpen}
+                className="accountDropdown"
+              >
+                Address: {formatAddress(address)} ↓
+              </DropdownToggle>
+              <DropdownMenu right>
+                <DropdownItem header>Wallet Details</DropdownItem>
+                <DropdownItem>Total lend : </DropdownItem>
+                <DropdownItem>Total borrow :</DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onClick={disconnectWallet}>
+                  Disconnect Wallet
+                </DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+          )}
         </Nav>
       </Navbar>
     </div>

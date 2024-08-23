@@ -84,6 +84,7 @@
   position: absolute !important;
   width: 100%;
   top: 0%;
+  z-index: 1;
 }
 .navbar-brand {
   color: white !important;
@@ -145,10 +146,8 @@
   padding: 1.5rem;
   display: flex;
   background-color: rgb(30 36 49);
-  position: absolute;
   top: 10%;
-  width: 90%;
-  margin: 0% 6%;
+  margin: 7% 6%;
   border-radius: 15px;
 }
 .cardInnerContainer {
@@ -193,4 +192,67 @@
   background: rgb(45 53 73);
   color: white;
   border-radius: 12px;
+}
+
+.accountDropdown {
+  cursor: pointer;
+  color: white;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+}
+.accountDropdown:hover {
+  border: 1px solid white;
+}
+.list {
+  color: white;
+  background-color: rgb(30 36 49);
+  border-radius: 12px;
+  width: 85%;
+  margin: auto;
+  padding: 1.5rem;
+  cursor: pointer;
+}
+.headers-list {
+  display: flex;
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.6);
+}
+.headers {
+  display: flex;
+  padding: 5px;
+  margin-bottom: 10px;
+  width: 25%;
+}
+.asset-row {
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+.asset-row:hover {
+  color: white;
+}
+.asset-row:nth-child(odd) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+.row-entry {
+  width: 25%;
+}
+
+.transact-input {
+  display: flex;
+  -webkit-box-align: center;
+  align-items: center;
+  background: rgb(24, 29, 39) !important;
+  padding: 8px 8px 8px 16px;
+  border-radius: 12px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: rgb(45, 53, 73);
+  border-image: initial;
+  color: white;
+}
+.transact-input:hover {
+  border-color: rgb(255, 255, 255);
 }
