@@ -256,3 +256,14 @@
 .transact-input:hover {
   border-color: rgb(255, 255, 255);
 }
+.transact-details {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+}
+.details-title {
+  color: rgba(255, 255, 255, 0.5);
+}
+.modal-content {
+  background: rgb(193, 200, 215) !important;
+}
