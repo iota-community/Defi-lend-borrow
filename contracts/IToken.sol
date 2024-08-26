@@ -47,6 +47,37 @@ contract IToken is ERC20, ReentrancyGuard {
     }
 
     /**
+     * @notice Mints IToken by depositing the underlying token
+     * @param amount The amount of the underlying token to deposit
+     * @return bool indicating success
+     */
+    function mint(uint256 amount) external nonReentrant returns (bool) {
+        require(underlying.transferFrom(msg.sender, address(this), amount), "Transfer failed");
+        _mint(msg.sender, amount);
+
+        // Update collateral in ITokenManager
+        tokenManager.updateCollateral(msg.sender, address(this), balanceOf(msg.sender));
+
+        return true;
+    }
+
+    /**
+     * @notice Redeems IToken by withdrawing the underlying token
+     * @param amount The amount of IToken to redeem
+     * @return bool indicating success
+     */
+    function redeem(uint256 amount) external nonReentrant returns (bool) {
+        require(balanceOf(msg.sender) >= amount, "Insufficient balance");
+        _burn(msg.sender, amount);
+        require(underlying.transfer(msg.sender, amount), "Transfer failed");
+
+        // Update collateral in ITokenManager
+        tokenManager.updateCollateral(msg.sender, address(this), balanceOf(msg.sender));
+
+        return true;
+    }
+
+    /**
      * @notice Borrows the underlying token from the contract
      * @param amount The amount of the underlying token to borrow
      * @return bool indicating success
@@ -66,30 +97,28 @@ contract IToken is ERC20, ReentrancyGuard {
         return true;
     }
 
+    /**
+     * @notice Repays the borrowed underlying token
+     * @param amount The amount of the underlying token to repay
+     * @return bool indicating success
+     */
+    function repay(uint256 amount) external nonReentrant returns (bool) {
+        require(borrows[msg.sender] >= amount, "Repay amount exceeds borrow");
+        require(underlying.transferFrom(msg.sender, address(this), amount), "Transfer failed");
 
-/**
- * @notice Repays the borrowed underlying token
- * @param amount The amount of the underlying token to repay
- * @return bool indicating success
- */
-function repay(uint256 amount) external nonReentrant returns (bool) {
-    require(borrows[msg.sender] >= amount, "Repay amount exceeds borrow");
-    require(underlying.transferFrom(msg.sender, address(this), amount), "Transfer failed");
+        uint256 cash = underlying.balanceOf(address(this));
+        uint256 borrowRate = interestRateModel.getBorrowRate(cash, totalBorrows, totalReserves);
+        uint256 interest = (amount * borrowRate) / 1e18;
 
-    uint256 cash = underlying.balanceOf(address(this));
-    uint256 borrowRate = interestRateModel.getBorrowRate(cash, totalBorrows, totalReserves);
-    uint256 interest = (amount * borrowRate) / 1e18;
+        borrows[msg.sender] -= amount;
+        totalBorrows -= (amount - interest);
+        totalReserves += interest;
 
-    borrows[msg.sender] -= amount;
-    totalBorrows -= (amount - interest);
-    totalReserves += interest;
+        // Update collateral in ITokenManager
+        tokenManager.updateCollateral(msg.sender, address(this), borrows[msg.sender]);
 
-    // Update collateral in ITokenManager
-    tokenManager.updateCollateral(msg.sender, address(this), borrows[msg.sender]);
-
-    return true;
-}
-
+        return true;
+    }
 
     /**
      * @notice Returns the current borrow rate per block
