@@ -36,7 +36,7 @@ export const NavigationBar = () => {
               >
                 Address: {formatAddress(address)} ↓
               </DropdownToggle>
-              <DropdownMenu right>
+              <DropdownMenu end>
                 <DropdownItem header>Wallet Details</DropdownItem>
                 <DropdownItem>Total lend : </DropdownItem>
                 <DropdownItem>Total borrow :</DropdownItem>

@@ -11,6 +11,11 @@ export const CONTRACT_ABI = [
         name: "_interestRateModel",
         type: "address",
       },
+      {
+        internalType: "address",
+        name: "_tokenManager",
+        type: "address",
+      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
@@ -404,6 +409,19 @@ export const CONTRACT_ABI = [
         internalType: "string",
         name: "",
         type: "string",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "tokenManager",
+    outputs: [
+      {
+        internalType: "contract ITokenManager",
+        name: "",
+        type: "address",
       },
     ],
     stateMutability: "view",

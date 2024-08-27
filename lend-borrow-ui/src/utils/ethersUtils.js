@@ -1,6 +1,5 @@
 import { ethers } from "ethers";
 import { NETWORK_DETAILS, DEFI_LEND_BORROW_ADDRESS } from "./constants";
-import { ERC20_ABI } from "./erc20Abi";
 import { CONTRACT_ABI } from "./contractAbi";
 
 const getAccount = async () => {
@@ -67,22 +66,21 @@ export const getNativeBalance = async () => {
     const address = await getSignerAddress();
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const balance = await provider.getBalance(address);
-    const balanceInBNB = ethers.utils.formatEther(balance);
-    return balanceInBNB;
+    const balanceInSMR = ethers.utils.formatEther(balance);
+    return balanceInSMR;
   } catch (error) {
-    console.log("Error getting BNB balance:", error);
+    console.log("Error getting SMR balance:", error);
     return null;
   }
 };
 
 export const getTokenBalance = async () => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
-
   const signer = provider.getSigner();
 
   let tokenContract = new ethers.Contract(
     DEFI_LEND_BORROW_ADDRESS,
-    ERC20_ABI,
+    CONTRACT_ABI,
     signer
   );
   const signerAdd = await signer.getAddress();

@@ -1,9 +1,15 @@
 import React, { useState, useContext } from "react";
 import { WalletContext } from "../../context/WalletContext";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
+import {
+  mintTokens,
+  borrowTokens,
+  redeemTokens,
+  repayTokens,
+} from "../../utils/sendTransactions";
 
 const TransactionForm = ({ activeTab }) => {
-  const [value, setValue] = useState(0.0);
+  const [value, setValue] = useState();
   const [isTransactModalOpen, setIsTransactModalOpen] = useState(false);
 
   const { connectWallet, address } = useContext(WalletContext);
@@ -14,23 +20,22 @@ const TransactionForm = ({ activeTab }) => {
 
   const handleConfirmTransaction = () => {
     transact();
-    toggleModal(); // Close the modal after confirming
+    toggleModal();
   };
 
-  const transact = () => {
-    // Logic to handle the transaction based on the active tab
+  const transact = async (amount) => {
     switch (activeTab) {
       case "Supply":
-        // Handle supply logic
+        await mintTokens(amount);
         break;
       case "Withdraw":
-        // Handle withdraw logic
+        await redeemTokens(amount);
         break;
       case "Borrow":
-        // Handle borrow logic
+        await borrowTokens(amount);
         break;
       case "Repay":
-        // Handle repay logic
+        await repayTokens(amount);
         break;
       default:
         break;
@@ -63,6 +68,7 @@ const TransactionForm = ({ activeTab }) => {
         onClick={() => (!address ? connectWallet() : toggleModal())}
         color="primary"
         block
+        disabled={!value}
       >
         {address ? "Transact" : "Connect Wallet"}
       </Button>

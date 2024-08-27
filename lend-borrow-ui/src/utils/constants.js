@@ -1,18 +1,18 @@
-export const CHAIN_ID = "0x7A69"; // HardhatETH network
+export const CHAIN_ID = "0x431"; // Shimmer EVM Testnet
 
 export const DEFI_LEND_BORROW_ADDRESS =
-  "0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9";
+  "0x7AD5BeE961e9e7aE4b7e6E61bca6a2AfF618b14b";
 
 export const NETWORK_DETAILS = {
   chainId: CHAIN_ID,
-  chainName: "Hardhat ETH",
+  chainName: "Shimmer EVM Testnet",
   nativeCurrency: {
-    name: "Hardhat ETH",
-    symbol: "ETH",
+    name: "Shimmer",
+    symbol: "SMR",
     decimals: 18,
   },
-  rpcUrls: ["http://127.0.0.1:8545/"],
-  blockExplorerUrls: [""],
+  rpcUrls: ["https://json-rpc.evm.testnet.shimmer.network"],
+  blockExplorerUrls: ["https://explorer.evm.testnet.shimmer.network/"],
 };
 
 export const ASSETLIST = [
