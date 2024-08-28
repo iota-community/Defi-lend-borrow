@@ -266,3 +266,24 @@
 .modal-content {
   background: rgb(193, 200, 215) !important;
 }
+.back-button {
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 55px;
+  border-radius: 18px;
+  background: transparent;
+  position: absolute;
+  top: -40%;
+  height: 35px;
+  color: white;
+}
+.back-button:hover {
+  border: 1px solid white;
+}
+.low-balance {
+  color: red;
+  display: flex;
+  flex-direction: row-reverse;
+}

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import TabsPanel from "./Tabs";
 import TransactionForm from "./TransactionForm";
 
-const TransactionsCard = ({ Asset }) => {
+const TransactionsCard = ({ selectedAsset, setSelectedAsset }) => {
   const [activeTab, setActiveTab] = useState("Supply");
 
   return (
@@ -10,7 +10,11 @@ const TransactionsCard = ({ Asset }) => {
       <TabsPanel activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div>
-        <TransactionForm activeTab={activeTab} />
+        <TransactionForm
+          selectedAsset={selectedAsset}
+          activeTab={activeTab}
+          setSelectedAsset={setSelectedAsset}
+        />
       </div>
     </div>
   );

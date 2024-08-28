@@ -1,41 +1,60 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { WalletContext } from "../../context/WalletContext";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import {
-  mintTokens,
-  borrowTokens,
-  redeemTokens,
-  repayTokens,
+  mintItokens,
+  borrowItokens,
+  redeemItokens,
+  repayItokens,
 } from "../../utils/sendTransactions";
+import { getTokenBalance } from "../../utils/ethersUtils";
 
-const TransactionForm = ({ activeTab }) => {
-  const [value, setValue] = useState();
+const TransactionForm = ({ selectedAsset, activeTab, setSelectedAsset }) => {
+  const [value, setValue] = useState(0);
+  // const [value, setValue] = useState(0);
+
+  const [tokenBalance, setTokenBalance] = useState();
+
   const [isTransactModalOpen, setIsTransactModalOpen] = useState(false);
 
   const { connectWallet, address } = useContext(WalletContext);
+
+  useEffect(() => setValue(0), [activeTab]);
+  useEffect(() => {
+    const init = async () => {
+      const underlyingTokenBalance = await getTokenBalance();
+      setTokenBalance(underlyingTokenBalance);
+    };
+    init();
+  }, []);
 
   const toggleModal = () => {
     setIsTransactModalOpen(!isTransactModalOpen);
   };
 
-  const handleConfirmTransaction = () => {
-    transact();
-    toggleModal();
+  const handleConfirmTransaction = async () => {
+    try {
+      toggleModal();
+      const transx = await transact(value);
+    } catch (e) {
+      toggleModal();
+      console.log("Error in trnsx", e);
+    }
   };
 
   const transact = async (amount) => {
     switch (activeTab) {
       case "Supply":
-        await mintTokens(amount);
+        await mintItokens(amount);
         break;
       case "Withdraw":
-        await redeemTokens(amount);
+        await redeemItokens(amount);
         break;
       case "Borrow":
-        await borrowTokens(amount);
+        await borrowItokens(amount);
         break;
       case "Repay":
-        await repayTokens(amount);
+        await repayItokens(amount);
         break;
       default:
         break;
@@ -44,6 +63,9 @@ const TransactionForm = ({ activeTab }) => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <Button className="back-button" onClick={() => setSelectedAsset({})}>
+        ⬅
+      </Button>
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
@@ -52,8 +74,12 @@ const TransactionForm = ({ activeTab }) => {
       />
       <div className="transact-details">
         <div className="details-title">Supply balance</div>
-        <div>0</div>
+        <div>{tokenBalance}</div>
       </div>
+      {tokenBalance == 0 && (
+        <div className="low-balance">Not enough Balance</div>
+      )}
+
       <div className="transact-details">
         <div className="details-title">Borrow limit</div>
         <div>$0</div>
@@ -68,14 +94,16 @@ const TransactionForm = ({ activeTab }) => {
         onClick={() => (!address ? connectWallet() : toggleModal())}
         color="primary"
         block
-        disabled={!value}
+        disabled={!value || tokenBalance == 0}
       >
         {address ? "Transact" : "Connect Wallet"}
       </Button>
 
       <Modal isOpen={isTransactModalOpen} toggle={toggleModal} centered>
         <ModalHeader toggle={toggleModal}>Confirm Transaction</ModalHeader>
-        <ModalBody>trnsx details</ModalBody>
+        <ModalBody>
+          {activeTab} amount : {value}
+        </ModalBody>
         <ModalFooter>
           <button
             style={{ color: "green", background: "#99d199" }}

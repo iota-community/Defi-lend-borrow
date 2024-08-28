@@ -12,7 +12,7 @@ import {
 import { WalletContext } from "../context/WalletContext";
 import formatAddress from "../utils/formats";
 
-export const NavigationBar = () => {
+export const NavigationBar = ({ setIsAccountsComponent }) => {
   const { address, tokenBal, bnbBal, disconnectWallet } =
     useContext(WalletContext);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -38,8 +38,9 @@ export const NavigationBar = () => {
               </DropdownToggle>
               <DropdownMenu end>
                 <DropdownItem header>Wallet Details</DropdownItem>
-                <DropdownItem>Total lend : </DropdownItem>
-                <DropdownItem>Total borrow :</DropdownItem>
+                <DropdownItem onClick={() => setIsAccountsComponent(true)}>
+                  Go to Accounts Section{" "}
+                </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem onClick={disconnectWallet}>
                   Disconnect Wallet
