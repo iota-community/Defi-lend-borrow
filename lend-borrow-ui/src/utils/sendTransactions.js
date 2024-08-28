@@ -1,29 +1,63 @@
 import { ethers } from "ethers";
-import { DEFI_LEND_BORROW_ADDRESS } from "./constants";
-import { CONTRACT_ABI } from "./contractAbi";
+import {
+  ITOKEN_ADDRESS,
+  UNDERLYING_TOKEN_ADDRESS,
+  INTEREST_RATE_MODAL_ADDRESS,
+  ITOKEN_MANAGER_ADDRESS,
+} from "./constants";
+import {
+  CONTRACT_ABI,
+  INTEREST_RATE_MODAL_CONTRACT_ABI,
+  ITOKEN_MANAGER_CONTRACT_ABI,
+  UNDERLYING_CONTRACT_ABI,
+} from "./contractAbi";
 
-const getITokenContract = async () => {
+export const getContract = async (contractAddress, contractAbi) => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
-  return new ethers.Contract(DEFI_LEND_BORROW_ADDRESS, CONTRACT_ABI, signer);
-};
-const performTransaction = async (method, amount) => {
-  try {
-    const iTokenContract = await getITokenContract();
-    const parsedAmount = ethers.utils.parseUnits(amount.toString(), 8);
-    const transaction = await iTokenContract[method](parsedAmount);
-    console.log(transaction);
-  } catch (e) {
-    console.log(`Error while transacting: `, e);
-  }
+  return new ethers.Contract(contractAddress, contractAbi, signer);
 };
 
-export const mintTokens = async (amount) =>
-  await performTransaction("mint", amount);
-export const borrowTokens = async (amount) =>
-  await performTransaction("borrow", amount);
+export const mintItokens = async (amount) => {
+  const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18);
+  //approve underlying to ITokenContract
+  const underlyingToken = await getContract(
+    UNDERLYING_TOKEN_ADDRESS,
+    UNDERLYING_CONTRACT_ABI
+  );
+  await underlyingToken.approve(ITOKEN_ADDRESS, parsedAmount);
+  //Add token to ITokenManager if not present
+  const iTokenManagerContract = await getContract(
+    ITOKEN_MANAGER_ADDRESS,
+    ITOKEN_MANAGER_CONTRACT_ABI
+  );
+  const isTokenPresent = await iTokenManagerContract.supportedTokens(
+    UNDERLYING_TOKEN_ADDRESS
+  );
+  !isTokenPresent &&
+    (await iTokenManagerContract.addToken(UNDERLYING_TOKEN_ADDRESS));
+  //Mint IToken
+  const iTokenContract = await getContract(ITOKEN_ADDRESS, CONTRACT_ABI);
+  await iTokenContract.mint(parsedAmount);
+};
 
-export const redeemTokens = async (amount) =>
-  await performTransaction("redeem", amount);
-export const repayTokens = async (amount) =>
-  await performTransaction("repay", amount);
+export const redeemItokens = async (amount) => {
+  const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18);
+
+  const iTokenContract = await getContract(ITOKEN_ADDRESS, CONTRACT_ABI);
+  await iTokenContract.redeem(parsedAmount);
+};
+
+export const borrowItokens = async (amount) => {
+  const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18);
+
+  const iTokenContract = await getContract(ITOKEN_ADDRESS, CONTRACT_ABI);
+  await iTokenContract.borrow(parsedAmount);
+};
+
+export const repayItokens = async (amount) => {
+  const parsedAmount = ethers.utils.parseUnits(amount.toString(), 18);
+
+  const iTokenContract = await getContract(ITOKEN_ADDRESS, CONTRACT_ABI);
+  await iTokenContract.repay(parsedAmount);
+};

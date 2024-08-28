@@ -1,7 +1,16 @@
 import { ethers } from "ethers";
-import { NETWORK_DETAILS, DEFI_LEND_BORROW_ADDRESS } from "./constants";
-import { CONTRACT_ABI } from "./contractAbi";
-
+import {
+  NETWORK_DETAILS,
+  ITOKEN_ADDRESS,
+  ITOKEN_MANAGER_ADDRESS,
+  UNDERLYING_TOKEN_ADDRESS,
+} from "./constants";
+import {
+  CONTRACT_ABI,
+  ITOKEN_MANAGER_CONTRACT_ABI,
+  UNDERLYING_CONTRACT_ABI,
+} from "./contractAbi";
+import { getContract } from "./sendTransactions";
 const getAccount = async () => {
   let value = await window.ethereum.request({
     method: "eth_requestAccounts",
@@ -74,13 +83,50 @@ export const getNativeBalance = async () => {
   }
 };
 
+export const getItokenBalance = async () => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+
+  let tokenContract = new ethers.Contract(ITOKEN_ADDRESS, CONTRACT_ABI, signer);
+  const signerAdd = await signer.getAddress();
+  const balance = await tokenContract.balanceOf(signerAdd);
+  const balanceInWei = balance.toString();
+  const balanceInDecimals = ethers.utils.formatUnits(balanceInWei, 18);
+  return balanceInDecimals.slice(0, 10);
+};
+
+export const getItokenDetails = async () => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+
+  let tokenContract = new ethers.Contract(ITOKEN_ADDRESS, CONTRACT_ABI, signer);
+
+  const reserveFactorMantissa = await tokenContract.reserveFactorMantissa();
+  const reserveFactorMantissaInDecimals = ethers.utils.formatUnits(
+    reserveFactorMantissa,
+    16
+  );
+
+  const totalBorrows = await tokenContract.totalBorrows();
+  const totalBorrowsInDecimals = ethers.utils.formatUnits(totalBorrows, 18);
+
+  const totalReserves = await tokenContract.totalReserves();
+  const totalReservesInDecimals = ethers.utils.formatUnits(totalReserves, 18);
+
+  return {
+    reserveFactorMantissa: reserveFactorMantissaInDecimals,
+    totalBorrows: totalBorrowsInDecimals,
+    totalReserves: totalReservesInDecimals,
+  };
+};
+
 export const getTokenBalance = async () => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
 
   let tokenContract = new ethers.Contract(
-    DEFI_LEND_BORROW_ADDRESS,
-    CONTRACT_ABI,
+    UNDERLYING_TOKEN_ADDRESS,
+    UNDERLYING_CONTRACT_ABI,
     signer
   );
   const signerAdd = await signer.getAddress();
@@ -88,4 +134,11 @@ export const getTokenBalance = async () => {
   const balanceInWei = balance.toString();
   const balanceInDecimals = ethers.utils.formatUnits(balanceInWei, 8);
   return balanceInDecimals.slice(0, 10);
+};
+export const getAllSupportedTokens = async () => {
+  const ITokenManagerInstance = await getContract(
+    ITOKEN_MANAGER_ADDRESS,
+    ITOKEN_MANAGER_CONTRACT_ABI
+  );
+  return await ITokenManagerInstance.getAllSupportedTokens();
 };
