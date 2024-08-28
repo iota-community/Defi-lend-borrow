@@ -4,24 +4,37 @@ import { WalletContext } from "./context/WalletContext";
 import { NavigationBar } from "./components/NavigationBar";
 import LendBorrowPlatformDetails from "./components/LendBorrowPlatformDetails";
 import AllAssetsList from "./components/LendBorrowPlatformDetails/AllAssetsList";
-
+import AccountDetailsComponent from "./components/AccountDetailsComponent";
 import TransactionsCard from "./components/TransactionsCard";
 
 const App = () => {
   const { address, tokenBal } = useContext(WalletContext);
-  console.log(tokenBal);
   const [selectedAsset, setSelectedAsset] = useState({});
+  const [isAccountsComponent, setIsAccountsComponent] = useState(false);
+
   return (
     <div className="app">
       <div>
-        <NavigationBar />
-        {!selectedAsset.assetName ? (
-          <>
-            <LendBorrowPlatformDetails />
-            <AllAssetsList setSelectedAsset={setSelectedAsset} />
-          </>
+        <NavigationBar setIsAccountsComponent={setIsAccountsComponent} />
+
+        {isAccountsComponent ? (
+          <AccountDetailsComponent
+            setIsAccountsComponent={setIsAccountsComponent}
+          />
         ) : (
-          <TransactionsCard selectedAsset={selectedAsset} />
+          <>
+            {!selectedAsset.assetName ? (
+              <>
+                <LendBorrowPlatformDetails />
+                <AllAssetsList setSelectedAsset={setSelectedAsset} />
+              </>
+            ) : (
+              <TransactionsCard
+                selectedAsset={selectedAsset}
+                setSelectedAsset={setSelectedAsset}
+              />
+            )}
+          </>
         )}
       </div>
     </div>
