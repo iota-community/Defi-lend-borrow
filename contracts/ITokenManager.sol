@@ -7,6 +7,9 @@ contract ITokenManager {
     /// @notice Mapping of IToken addresses to a boolean indicating whether they are supported
     mapping(address => bool) public supportedTokens;
 
+    /// @notice Array to store all supported token addresses
+    address[] private supportedTokenList;
+
     /// @notice Mapping of account addresses to collateral balances
     mapping(address => mapping(address => uint256)) public accountCollaterals;
 
@@ -28,6 +31,7 @@ contract ITokenManager {
     function addToken(address token) external {
         require(!supportedTokens[token], "Token already added");
         supportedTokens[token] = true;
+        supportedTokenList.push(token);  // Add token to the list
         emit TokenAdded(token);
     }
 
@@ -38,6 +42,16 @@ contract ITokenManager {
     function removeToken(address token) external {
         require(supportedTokens[token], "Token not found");
         supportedTokens[token] = false;
+
+        // Remove token from the list
+        for (uint i = 0; i < supportedTokenList.length; i++) {
+            if (supportedTokenList[i] == token) {
+                supportedTokenList[i] = supportedTokenList[supportedTokenList.length - 1];
+                supportedTokenList.pop();
+                break;
+            }
+        }
+
         emit TokenRemoved(token);
     }
 
@@ -64,5 +78,12 @@ contract ITokenManager {
         uint256 collateral = accountCollaterals[account][token];
         return collateral >= borrowAmount * 150 / 100;
     }
-}
 
+    /**
+     * @notice Returns the list of all supported tokens
+     * @return address[] array of supported token addresses
+     */
+    function getAllSupportedTokens() external view returns (address[] memory) {
+        return supportedTokenList;
+    }
+}
