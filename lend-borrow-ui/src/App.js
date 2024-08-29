@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import "./App.css";
-import { WalletContext } from "./context/WalletContext";
+import { WalletContext } from "./context/Context";
 import { NavigationBar } from "./components/NavigationBar";
 import LendBorrowPlatformDetails from "./components/LendBorrowPlatformDetails";
 import AllAssetsList from "./components/LendBorrowPlatformDetails/AllAssetsList";

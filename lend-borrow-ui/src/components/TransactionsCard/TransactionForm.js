@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { WalletContext } from "../../context/WalletContext";
+import { WalletContext } from "../../context/Context";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import {
   mintItokens,
@@ -63,9 +63,9 @@ const TransactionForm = ({ selectedAsset, activeTab, setSelectedAsset }) => {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <Button className="back-button" onClick={() => setSelectedAsset({})}>
+      <button className="back-button" onClick={() => setSelectedAsset({})}>
         ⬅
-      </Button>
+      </button>
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}

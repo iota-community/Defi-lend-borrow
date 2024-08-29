@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Button } from "reactstrap";
-import { WalletContext } from "../context/WalletContext";
+import { WalletContext } from "../context/Context";
 
 const AccountDetailsComponent = ({ setIsAccountsComponent }) => {
   const { address } = useContext(WalletContext);
@@ -10,12 +10,12 @@ const AccountDetailsComponent = ({ setIsAccountsComponent }) => {
       className="card"
       style={{ width: "350px", color: "white", height: "fit-content" }}
     >
-      <Button
+      <button
         className="back-button"
         onClick={() => setIsAccountsComponent(false)}
       >
         ⬅
-      </Button>
+      </button>
 
       <h4>Account Details</h4>
       <div style={{ marginBottom: "20px" }}>Address : {address}</div>

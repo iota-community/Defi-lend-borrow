@@ -9,7 +9,7 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
-import { WalletContext } from "../context/WalletContext";
+import { WalletContext } from "../context/Context";
 import formatAddress from "../utils/formats";
 
 export const NavigationBar = ({ setIsAccountsComponent }) => {
