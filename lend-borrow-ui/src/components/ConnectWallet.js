@@ -1,11 +1,10 @@
 import React, { useContext } from "react";
 import { Button } from "reactstrap";
-import { WalletContext } from "../context/Context";
+import { Context } from "../context/Context";
 import "../App.css";
 
 const ConnectWallet = () => {
-  const { connectWallet, address, disconnectWallet } =
-    useContext(WalletContext);
+  const { connectWallet, address, disconnectWallet } = useContext(Context);
 
   return (
     <div>

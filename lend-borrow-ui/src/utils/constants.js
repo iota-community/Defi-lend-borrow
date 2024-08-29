@@ -32,31 +32,10 @@ export const ASSETLIST = [
     price: 1.0,
   },
   {
-    assetName: "ETH",
-    totalBorrow: 200000,
-    totalSupply: 1000000,
-    liquidity: 800000,
-    price: 1900.0,
-  },
-  {
-    assetName: "BTC",
-    totalBorrow: 300000,
-    totalSupply: 1200000,
-    liquidity: 900000,
-    price: 30000.0,
-  },
-  {
     assetName: "DAI",
     totalBorrow: 4000000,
     totalSupply: 10000000,
     liquidity: 6000000,
     price: 1.0,
-  },
-  {
-    assetName: "UNI",
-    totalBorrow: 1000000,
-    totalSupply: 5000000,
-    liquidity: 4000000,
-    price: 5.5,
   },
 ];

@@ -7,7 +7,7 @@ import {
   changeNetwork,
 } from "../utils/ethersUtils";
 
-export const WalletContext = createContext();
+export const Context = createContext();
 
 export const WalletProvider = ({ children }) => {
   const [address, setAddress] = useState();
@@ -54,9 +54,9 @@ export const WalletProvider = ({ children }) => {
         await changeNetwork();
         const addr = await getSignerAddress();
         const bnbBalance = await getNativeBalance();
-        // const tokenBalance = await getItokenBalance();
+        const tokenBalance = await getItokenBalance();
         setBnbBal(bnbBalance);
-        // setTokenBal(tokenBalance);
+        setTokenBal(tokenBalance);
         setAddress(addr);
       }
     } catch (err) {
@@ -73,7 +73,7 @@ export const WalletProvider = ({ children }) => {
   };
 
   return (
-    <WalletContext.Provider
+    <Context.Provider
       value={{
         address,
         bnbBal,
@@ -90,6 +90,6 @@ export const WalletProvider = ({ children }) => {
       }}
     >
       {children}
-    </WalletContext.Provider>
+    </Context.Provider>
   );
 };

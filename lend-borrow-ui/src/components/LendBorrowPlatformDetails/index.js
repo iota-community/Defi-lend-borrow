@@ -47,7 +47,10 @@ const LendBorrowPlatformDetails = () => {
           )}
         </div>
       </div>
-      <div className="cardInnerContainer">
+      <div
+        className="cardInnerContainer"
+        style={{ borderRight: "1px solid transparent" }}
+      >
         <div className="heading">Reserve Factor Mantissa</div>
         <div className="subHeading">
           {isLoading ? (

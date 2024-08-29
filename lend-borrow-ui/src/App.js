@@ -1,14 +1,14 @@
 import React, { useContext, useState } from "react";
 import "./App.css";
-import { WalletContext } from "./context/Context";
+import { Context } from "./context/Context";
 import { NavigationBar } from "./components/NavigationBar";
 import LendBorrowPlatformDetails from "./components/LendBorrowPlatformDetails";
 import AllAssetsList from "./components/LendBorrowPlatformDetails/AllAssetsList";
-import AccountDetailsComponent from "./components/AccountDetailsComponent";
+import AccountDetails from "./components/AccountDetails";
 import TransactionsCard from "./components/TransactionsCard";
 
 const App = () => {
-  const { address, tokenBal } = useContext(WalletContext);
+  const { address, tokenBal } = useContext(Context);
   const [selectedAsset, setSelectedAsset] = useState({});
   const [isAccountsComponent, setIsAccountsComponent] = useState(false);
 
@@ -18,9 +18,7 @@ const App = () => {
         <NavigationBar setIsAccountsComponent={setIsAccountsComponent} />
 
         {isAccountsComponent ? (
-          <AccountDetailsComponent
-            setIsAccountsComponent={setIsAccountsComponent}
-          />
+          <AccountDetails setIsAccountsComponent={setIsAccountsComponent} />
         ) : (
           <>
             {!selectedAsset.assetName ? (

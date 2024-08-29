@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { WalletContext } from "../../context/Context";
+import { Context } from "../../context/Context";
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 import {
   mintItokens,
@@ -17,7 +17,7 @@ const TransactionForm = ({ selectedAsset, activeTab, setSelectedAsset }) => {
 
   const [isTransactModalOpen, setIsTransactModalOpen] = useState(false);
 
-  const { connectWallet, address } = useContext(WalletContext);
+  const { connectWallet, address } = useContext(Context);
 
   useEffect(() => setValue(0), [activeTab]);
   useEffect(() => {

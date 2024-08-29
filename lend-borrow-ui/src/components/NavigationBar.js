@@ -9,12 +9,11 @@ import {
   DropdownMenu,
   DropdownItem,
 } from "reactstrap";
-import { WalletContext } from "../context/Context";
+import { Context } from "../context/Context";
 import formatAddress from "../utils/formats";
 
 export const NavigationBar = ({ setIsAccountsComponent }) => {
-  const { address, tokenBal, bnbBal, disconnectWallet } =
-    useContext(WalletContext);
+  const { address, tokenBal, bnbBal, disconnectWallet } = useContext(Context);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
