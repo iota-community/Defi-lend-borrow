@@ -22,10 +22,19 @@ const App = () => {
         ) : (
           <>
             {!selectedAsset.assetName ? (
-              <>
+              <div className="details-container">
+                <div className="dashboard-title">Dashboard</div>
+
+                <div className="dashboard-subheading">Platform Details</div>
                 <LendBorrowPlatformDetails />
+                <div
+                  style={{ marginTop: "25px" }}
+                  className="dashboard-subheading"
+                >
+                  All Available Assets
+                </div>
                 <AllAssetsList setSelectedAsset={setSelectedAsset} />
-              </>
+              </div>
             ) : (
               <TransactionsCard
                 selectedAsset={selectedAsset}

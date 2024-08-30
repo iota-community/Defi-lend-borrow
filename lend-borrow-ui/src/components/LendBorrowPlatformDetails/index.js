@@ -15,10 +15,11 @@ const LendBorrowPlatformDetails = () => {
     };
     init();
   }, []);
+
   return (
     <div className="LendBorrowPlatformDetailsCard">
       <div className="cardInnerContainer">
-        <div className="heading">Total Reserves</div>
+        <div className="heading">Total Supplies </div>
         <div className="subHeading">
           {isLoading ? (
             <ReactLoading
@@ -32,7 +33,10 @@ const LendBorrowPlatformDetails = () => {
           )}
         </div>
       </div>
-      <div className="cardInnerContainer">
+      <div
+        className="cardInnerContainer"
+        style={{ borderRight: "1px solid transparent" }}
+      >
         <div className="heading">Total borrows</div>
         <div className="subHeading">
           {isLoading ? (
@@ -44,24 +48,6 @@ const LendBorrowPlatformDetails = () => {
             />
           ) : (
             itokenDetails.totalBorrows
-          )}
-        </div>
-      </div>
-      <div
-        className="cardInnerContainer"
-        style={{ borderRight: "1px solid transparent" }}
-      >
-        <div className="heading">Reserve Factor Mantissa</div>
-        <div className="subHeading">
-          {isLoading ? (
-            <ReactLoading
-              type={"spin"}
-              color={"white"}
-              height={20}
-              width={20}
-            />
-          ) : (
-            `${itokenDetails.reserveFactorMantissa}  %`
           )}
         </div>
       </div>
