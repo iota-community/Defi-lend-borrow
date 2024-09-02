@@ -11,10 +11,7 @@ import { getTokenBalance } from "../../utils/ethersUtils";
 
 const TransactionForm = ({ selectedAsset, activeTab, setSelectedAsset }) => {
   const [value, setValue] = useState(0);
-  // const [value, setValue] = useState(0);
-
   const [tokenBalance, setTokenBalance] = useState();
-
   const [isTransactModalOpen, setIsTransactModalOpen] = useState(false);
 
   const { connectWallet, address } = useContext(Context);
@@ -66,12 +63,17 @@ const TransactionForm = ({ selectedAsset, activeTab, setSelectedAsset }) => {
       <button className="back-button" onClick={() => setSelectedAsset({})}>
         ⬅
       </button>
-      <input
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        placeholder={`Enter ${activeTab} amount`}
-        className="transact-input"
-      />
+      <div className="transact-input-container">
+        <input
+          className="transact-input"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={`Enter ${activeTab} amount`}
+        />
+        <button className="transact-token-name">
+          {selectedAsset.assetName}
+        </button>
+      </div>
       <div className="transact-details">
         <div className="details-title">Supply balance</div>
         <div>{tokenBalance}</div>

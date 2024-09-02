@@ -7,64 +7,84 @@ const AccountDetails = ({ setIsAccountsComponent }) => {
   const { address } = useContext(Context);
 
   return (
-    <div
-      className="card"
-      style={{ width: "95%", color: "white", height: "fit-content" }}
-    >
-      <button
-        className="back-button"
-        onClick={() => setIsAccountsComponent(false)}
-      >
-        ⬅
-      </button>
-
-      <h4>Account Details</h4>
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          marginBottom: "20px",
-          alignItems: "center",
-          display: "flex",
-        }}
-      >
-        {" "}
+    <div>
+      <h4 style={{ color: "white", marginLeft: "75px", marginBottom: "40px" }}>
+        Account Details
+      </h4>
+      <div style={{ display: "flex", gap: "30px" }}>
         <div
+          className="card"
           style={{
-            fontSize: "16px",
-            color: "rgba(255,255,255,0.6)",
+            width: "40%",
+            color: "white",
+            height: "fit-content",
+            padding: "14px",
           }}
         >
-          Address
-        </div>{" "}
-        {address}
-      </div>
+          <div className="dashboard-subheading">Supplies</div>
 
-      <div className="list">
-        <div className="headers-list">
-          <div className="headers">Asset</div>
-          <div className="headers">Total Borrow</div>
-          <div className="headers">Total Supply</div>
-          <div className="headers">Liquidity</div>
-          <div className="headers">Price</div>
-        </div>
-        {ASSETLIST.map((asset, index) => (
-          <div
-            key={index}
-            className="asset-row"
-            // onClick={() => setSelectedAsset(asset)}
+          <button
+            style={{ top: "-100%" }}
+            className="back-button"
+            onClick={() => setIsAccountsComponent(false)}
           >
-            <div className="row-entry">{asset.assetName}</div>
-            <div className="row-entry">
-              {asset.totalBorrow.toLocaleString()}
+            ⬅
+          </button>
+
+          <div className="list">
+            <div className="headers-list">
+              <div className="headers">Asset</div>
+              <div className="headers">Total Supply</div>
+              <div className="headers">Price</div>
             </div>
-            <div className="row-entry">
-              {asset.totalSupply.toLocaleString()}
-            </div>
-            <div className="row-entry">{asset.liquidity.toLocaleString()}</div>
-            <div className="row-entry">{`$${asset.price.toFixed(2)}`}</div>
+            {ASSETLIST.map((asset, index) => (
+              <div
+                key={index}
+                className="asset-row"
+                // onClick={() => setSelectedAsset(asset)}
+              >
+                <div className="row-entry">{asset.assetName}</div>
+                <div className="row-entry">
+                  {asset.totalSupply.toLocaleString()}
+                </div>
+                <div className="row-entry">{`$${asset.price.toFixed(2)}`}</div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
+
+        <div
+          className="card"
+          style={{
+            width: "40%",
+            color: "white",
+            height: "fit-content",
+            padding: "14px",
+          }}
+        >
+          {" "}
+          <div className="dashboard-subheading">Borrows</div>
+          <div className="list">
+            <div className="headers-list">
+              <div className="headers">Asset</div>
+              <div className="headers">Total Borrow</div>
+              <div className="headers">Price</div>
+            </div>
+            {ASSETLIST.map((asset, index) => (
+              <div
+                key={index}
+                className="asset-row"
+                // onClick={() => setSelectedAsset(asset)}
+              >
+                <div className="row-entry">{asset.assetName}</div>
+                <div className="row-entry">
+                  {asset.totalSupply.toLocaleString()}
+                </div>
+                <div className="row-entry">{`$${asset.price.toFixed(2)}`}</div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

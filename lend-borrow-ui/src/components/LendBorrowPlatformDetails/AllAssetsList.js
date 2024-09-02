@@ -3,12 +3,12 @@ import { ASSETLIST } from "../../utils/constants";
 
 const AllAssetsList = ({ setSelectedAsset }) => {
   return (
-    <div className="list">
+    <div className="list" style={{ width: "80%x" }}>
       <div className="headers-list">
         <div className="headers">Asset</div>
         <div className="headers">Total Borrow</div>
         <div className="headers">Total Supply</div>
-        <div className="headers">Liquidity</div>
+        <div className="headers">Collateral Factor</div>
         <div className="headers">Price</div>
       </div>
       {ASSETLIST.map((asset, index) => (

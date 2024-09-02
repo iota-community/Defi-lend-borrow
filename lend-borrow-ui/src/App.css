@@ -145,9 +145,10 @@
   padding: 1.5rem;
   display: flex;
   background-color: rgb(30 36 49);
-  top: 10%;
-  margin: 7% 6%;
+  /* top: 10%; */
+  /* margin: 7% 6%; */
   border-radius: 15px;
+  width: fit-content;
 }
 .cardInnerContainer {
   margin-right: 1px;
@@ -207,9 +208,8 @@
   color: white;
   background-color: rgb(30 36 49);
   border-radius: 12px;
-  width: 85%;
-  margin: auto;
-  padding: 1.5rem;
+  width: 100%;
+  padding: 1rem;
   cursor: pointer;
 }
 .headers-list {
@@ -239,7 +239,7 @@
   width: 25%;
 }
 
-.transact-input {
+.transact-input-container {
   display: flex;
   -webkit-box-align: center;
   align-items: center;
@@ -251,9 +251,31 @@
   border-color: rgb(45, 53, 73);
   border-image: initial;
   color: white;
+  justify-content: space-between;
 }
-.transact-input:hover {
+.transact-input-container:hover {
   border-color: rgb(255, 255, 255);
+}
+.transact-input {
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+}
+
+.transact-input:hover,
+.transact-input:focus {
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+}
+.transact-token-name {
+  background: transparent;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  color: white;
 }
 .transact-details {
   display: flex;
@@ -286,4 +308,24 @@
   color: red;
   display: flex;
   flex-direction: row-reverse;
+}
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.dashboard-title {
+  font-size: 25px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 20px;
+}
+.dashboard-subheading {
+  color: rgba(255, 255, 255, 0.8);
+  margin-left: 10px;
+}
+.details-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-left: 100px;
 }
