@@ -5,13 +5,13 @@ async function main() {
   const InterestRateModel = await hre.ethers.getContractFactory(
     "InterestRateModel"
   );
-  const interestRateModelInstance = await InterestRateModel.deploy(1, 1);
+  const interestRateModelInstance = await InterestRateModel.deploy(10, 2);
   await interestRateModelInstance.waitForDeployment();
   const interestRateModelAddress = await interestRateModelInstance.getAddress();
 
   // Deploy MockERC20 token contract
   const MockERC20 = await hre.ethers.getContractFactory("MockERC20");
-  const totalSupply = await hre.ethers.parseUnits("1000", 8); // Deploys with 1000 tokens with 8 decimals
+  const totalSupply = hre.ethers.parseUnits("1000", 18); // Deploys with 1000 tokens with 18 decimals
   const token = await MockERC20.deploy("MockERC20", "MTKN", totalSupply);
   await token.waitForDeployment();
   const underlyingAddress = await token.getAddress();
@@ -32,6 +32,12 @@ async function main() {
   await iToken.waitForDeployment();
   const iTokenAddress = await iToken.getAddress();
 
+  console.log("underlyingAddress deployed to:", underlyingAddress);
+  console.log(
+    "interestRateModelAddress deployed to:",
+    interestRateModelAddress
+  );
+  console.log("ITokenManagerAddress deployed to:", ITokenManagerAddress);
   console.log("IToken deployed to:", iTokenAddress);
 }
 
