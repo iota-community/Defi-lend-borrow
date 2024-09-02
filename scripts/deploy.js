@@ -18,7 +18,9 @@ async function main() {
 
   // Deploy ITokenManager contract
   const ITokenManager = await hre.ethers.getContractFactory("ITokenManager");
-  const ITokenManagerInstance = await ITokenManager.deploy();
+  const ITokenManagerInstance = await ITokenManager.deploy(
+    "0x6bf7b21145Cbd7BB0b9916E6eB24EDA8A675D7C0"
+  ); // supra oracle address for shimmer evm
   await ITokenManagerInstance.waitForDeployment();
   const ITokenManagerAddress = await ITokenManagerInstance.getAddress();
 
@@ -27,7 +29,10 @@ async function main() {
   const iToken = await IToken.deploy(
     underlyingAddress,
     interestRateModelAddress,
-    ITokenManagerAddress
+    ITokenManagerAddress,
+    11,
+    "IToken",
+    "ITKN"
   );
   await iToken.waitForDeployment();
   const iTokenAddress = await iToken.getAddress();
