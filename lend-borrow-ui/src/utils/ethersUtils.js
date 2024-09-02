@@ -11,6 +11,7 @@ import {
   UNDERLYING_CONTRACT_ABI,
 } from "./contractAbi";
 import { getContract } from "./sendTransactions";
+
 const getAccount = async () => {
   let value = await window.ethereum.request({
     method: "eth_requestAccounts",
@@ -95,17 +96,24 @@ export const getItokenBalance = async () => {
   return balanceInDecimals.slice(0, 10);
 };
 
+export const getCollateral = async (accountAddr, tokenAddr) => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+
+  let tokenContract = new ethers.Contract(ITOKEN_ADDRESS, CONTRACT_ABI, signer);
+  const collateral = await tokenContract.checkCollateral(
+    accountAddr,
+    tokenAddr
+  );
+
+  return collateral;
+};
+
 export const getItokenDetails = async () => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
 
   let tokenContract = new ethers.Contract(ITOKEN_ADDRESS, CONTRACT_ABI, signer);
-
-  const reserveFactorMantissa = await tokenContract.reserveFactorMantissa();
-  const reserveFactorMantissaInDecimals = ethers.utils.formatUnits(
-    reserveFactorMantissa,
-    16
-  );
 
   const totalBorrows = await tokenContract.totalBorrows();
   const totalBorrowsInDecimals = ethers.utils.formatUnits(totalBorrows, 18);
@@ -114,12 +122,31 @@ export const getItokenDetails = async () => {
   const totalReservesInDecimals = ethers.utils.formatUnits(totalReserves, 18);
 
   return {
-    reserveFactorMantissa: reserveFactorMantissaInDecimals,
     totalBorrows: totalBorrowsInDecimals,
     totalReserves: totalReservesInDecimals,
   };
 };
 
+export const getTokenDetails = async (tokenAddress, accountAddress) => {
+  const provider = new ethers.providers.Web3Provider(window.ethereum);
+  const signer = provider.getSigner();
+
+  let tokenContract = new ethers.Contract(
+    tokenAddress,
+    UNDERLYING_CONTRACT_ABI,
+    signer
+  );
+
+  const tokenName = await tokenContract.name();
+  const tokenSymbol = await tokenContract.symbol();
+  const balance = await tokenContract.balanceOf(accountAddress);
+
+  return {
+    tokenName,
+    tokenSymbol,
+    tokenBalance: balance,
+  };
+};
 export const getTokenBalance = async () => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
