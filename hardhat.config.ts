@@ -1,7 +1,10 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
+import * as dotenv from "dotenv";
 
-const priv_key = "YOUR_PRIVATE_KEY_HERE"; 
+dotenv.config();
+
+const priv_key = process.env.PRIVATE_KEY || ""; 
 
 const config: HardhatUserConfig = {
   solidity: "0.8.24",
@@ -13,7 +16,7 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
-    apiKey: "YOUR_API_KEY_HERE",
+    apiKey: process.env.ETHERSCAN_API_KEY || "",
     customChains: [
       {
         network: "shimmer_evm_testnet",
@@ -23,8 +26,8 @@ const config: HardhatUserConfig = {
           browserURL: "https://explorer.evm.testnet.shimmer.network/",
         },
       },
-    ]
-  }
+    ],
+  },
 };
 
 export default config;
