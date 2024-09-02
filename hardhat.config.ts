@@ -7,7 +7,16 @@ dotenv.config();
 const priv_key = process.env.PRIVATE_KEY || ""; 
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.24",
+  solidity: {
+    version:"0.8.24",
+    settings:{
+      optimizer: {
+        enabled: true,
+        runs: 2000,
+      },
+      viaIR: true,
+    }
+  },
   networks: {
     shimmer_evm_testnet: {
       url: "https://json-rpc.evm.testnet.shimmer.network",
