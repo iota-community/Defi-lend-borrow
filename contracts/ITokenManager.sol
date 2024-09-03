@@ -2,8 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "./IToken.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract ITokenManager {
+contract ITokenManager is Ownable {
     /// @notice Mapping of IToken addresses to a boolean indicating whether they are supported
     mapping(address => bool) public supportedTokens;
 
@@ -42,6 +43,8 @@ contract ITokenManager {
         _;
     }
 
+    constructor() Ownable(msg.sender) {}
+
     /// @notice Checks if the provided address is nonzero, reverts otherwise
     /// @param address_ Address to check
     /// @custom:error ZeroAddressNotAllowed is thrown if the provided address is a zero address
@@ -59,7 +62,7 @@ contract ITokenManager {
         address token,
         uint256 tokenUSDPrice,
         uint256 tokenCollateralFactor
-    ) external {
+    ) external onlyOwner {
         ensureNonzeroAddress(token);
 
         require(!supportedTokens[token], "Token already added");
@@ -74,7 +77,7 @@ contract ITokenManager {
      * @notice Removes an IToken from the manager
      * @param token The address of the IToken to remove
      */
-    function removeToken(address token) external {
+    function removeToken(address token) external onlyOwner {
         ensureNonzeroAddress(token);
 
         require(supportedTokens[token], "Token not found");
@@ -215,7 +218,7 @@ contract ITokenManager {
     function updateTokenUSDPrice(
         address token,
         uint256 newUSDPrice
-    ) external onlySupportedToken(token) {
+    ) external onlyOwner onlySupportedToken(token) {
         ensureNonzeroAddress(token);
 
         // Update the USD price for the token
