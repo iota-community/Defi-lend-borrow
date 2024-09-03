@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "./IToken.sol";
-import "./ISupraSValueFeed.sol";
 
 contract ITokenManager {
     /// @notice Mapping of IToken addresses to a boolean indicating whether they are supported
@@ -14,9 +13,8 @@ contract ITokenManager {
     /// @notice Mapping of account addresses to collateral balances
     mapping(address => mapping(address => uint256)) public accountCollaterals;
 
-    ISupraSValueFeed internal sValueFeed;
-
-    mapping(address => uint256) public tokenOraclePriceIndexes;
+    /// @notice Mapping of token addresses to their USD prices
+    mapping(address => uint256) public tokenUSDPrices;
 
     mapping(address => uint256) public tokenCollateralFactors;
 
@@ -53,26 +51,20 @@ contract ITokenManager {
         }
     }
 
-    constructor(address supraOracleFeed) {
-        ensureNonzeroAddress(supraOracleFeed);
-
-        sValueFeed = ISupraSValueFeed(supraOracleFeed);
-    }
-
     /**
      * @notice Adds a new IToken to the manager
      * @param token The address of the IToken to add
      */
     function addToken(
         address token,
-        uint256 tokenOraclePriceIndex,
+        uint256 tokenUSDPrice,
         uint256 tokenCollateralFactor
     ) external {
         ensureNonzeroAddress(token);
 
         require(!supportedTokens[token], "Token already added");
         supportedTokens[token] = true;
-        tokenOraclePriceIndexes[token] = tokenOraclePriceIndex;
+        tokenUSDPrices[token] = tokenUSDPrice;
         tokenCollateralFactors[token] = tokenCollateralFactor;
         supportedTokenList.push(token); // Add token to the list
         emit TokenAdded(token);
@@ -87,7 +79,7 @@ contract ITokenManager {
 
         require(supportedTokens[token], "Token not found");
         delete supportedTokens[token];
-        delete tokenOraclePriceIndexes[token];
+        delete tokenUSDPrices[token];
 
         // Remove token from the list
         for (uint i = 0; i < supportedTokenList.length; i++) {
@@ -187,12 +179,9 @@ contract ITokenManager {
 
             (iTokenBalance, borrowBalance, exchangeRateMantissa) = asset
                 .getAccountSnapshot(account);
-            ISupraSValueFeed.priceFeed memory oracleData = sValueFeed.getPrice(
-                tokenOraclePriceIndexes[assets[i]]
-            );
 
-            uint256 iTokenPrice = (exchangeRateMantissa * oracleData.price) /
-                ONE_MANTISSA;
+            uint256 iTokenPrice = (exchangeRateMantissa *
+                tokenUSDPrices[assets[i]]) / ONE_MANTISSA;
             uint256 iTokenWithCollateral = (iTokenPrice *
                 iTokenBalance *
                 tokenCollateralFactors[assets[i]]) /
@@ -216,5 +205,20 @@ contract ITokenManager {
                 totalAccountBorrows += tokenBorrows;
             }
         }
+    }
+
+    /**
+     * @notice Updates the USD price of a supported token
+     * @param token The address of the token to update the price for
+     * @param newUSDPrice The new USD price to set for the token
+     */
+    function updateTokenUSDPrice(
+        address token,
+        uint256 newUSDPrice
+    ) external onlySupportedToken(token) {
+        ensureNonzeroAddress(token);
+
+        // Update the USD price for the token
+        tokenUSDPrices[token] = newUSDPrice;
     }
 }
