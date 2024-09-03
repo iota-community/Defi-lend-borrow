@@ -33,7 +33,7 @@ contract IToken is ERC20, ReentrancyGuard {
     mapping(address => BorrowSnapshot) public accountBorrows;
 
     /// @notice Initial exchange rate used when minting the first ITokens (used when totalSupply = 0)
-    uint256 internal initialExchangeRateMantissa;
+    uint256 internal constant initialExchangeRateMantissa = 1e18;
 
     /// @notice Slot(block or second) number that interest was last accrued at
     uint256 public accrualBlockNumber;
@@ -96,10 +96,7 @@ contract IToken is ERC20, ReentrancyGuard {
      * @param amount The amount of the underlying token to deposit
      * @return bool indicating success
      */
-    function mint(
-        uint256 amount,
-        address minter
-    ) external nonReentrant returns (bool) {
+    function mint(uint256 amount) external nonReentrant returns (bool) {
         accrueInterest();
         tokenManager.preMintChecks(address(this));
 
@@ -109,12 +106,11 @@ contract IToken is ERC20, ReentrancyGuard {
         uint256 mintTokens = exchangeRate != 0
             ? (amount * ONE_MANTISSA) / exchangeRate
             : (amount * ONE_MANTISSA) / 1;
-
         _mint(msg.sender, mintTokens);
 
         // Update collateral in ITokenManager
-        uint256 balanceAfter = accountTokens[minter] + mintTokens;
-        accountTokens[minter] = balanceAfter;
+        uint256 balanceAfter = accountTokens[msg.sender] + mintTokens;
+        accountTokens[msg.sender] = balanceAfter;
 
         return true;
     }
@@ -128,10 +124,11 @@ contract IToken is ERC20, ReentrancyGuard {
         accrueInterest();
 
         tokenManager.preRedeemChecks(address(this), msg.sender, amount);
-
         uint256 exchangeRate = _exchangeRateStored();
 
-        uint256 redeemUnderlyingAmount = (amount * exchangeRate) / ONE_MANTISSA;
+        uint256 redeemUnderlyingAmount = exchangeRate != 0
+            ? (amount * exchangeRate) / ONE_MANTISSA
+            : (amount * 1) / ONE_MANTISSA;
 
         if (underlying.balanceOf(address(this)) <= redeemUnderlyingAmount) {
             revert InsufficientBalance();
