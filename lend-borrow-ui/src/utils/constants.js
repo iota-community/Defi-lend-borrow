@@ -1,15 +1,15 @@
 export const CHAIN_ID = "0x431"; // Shimmer EVM Testnet
 
-export const ITOKEN_ADDRESS = "0x4342d1796006e2e19BE93ae90Fca4871E71B0C12";
+export const ITOKEN_ADDRESS = "0xDD135d3690d67684D24Bb08de9A9c607B7727Ecb";
 
 export const UNDERLYING_TOKEN_ADDRESS =
-  "0x4b2dAB096eEc64506B6a3299432B1491F18b9246";
+  "0x7038Dd2f0D704260eF8526631775fF80E833D24C";
 
 export const INTEREST_RATE_MODAL_ADDRESS =
-  "0x4b7cF6d2507cB5559d618FaC9F7370D8b49A53fD";
+  "0x83e29eeA371E84F0ca889BA610d8c7167276E570";
 
 export const ITOKEN_MANAGER_ADDRESS =
-  "0x4f5723A51437f797f3Fa05e7f8AA9657d0E4ee7c";
+  "0x651d6D12Fb7A1B92b33fcF2164AC6Dc8F92ba2E8";
 
 export const NETWORK_DETAILS = {
   chainId: CHAIN_ID,
@@ -22,20 +22,3 @@ export const NETWORK_DETAILS = {
   rpcUrls: ["https://json-rpc.evm.testnet.shimmer.network"],
   blockExplorerUrls: ["https://explorer.evm.testnet.shimmer.network/"],
 };
-
-export const ASSETLIST = [
-  {
-    assetName: "USDT",
-    totalBorrow: 5000000,
-    totalSupply: 15000000,
-    liquidity: 10000000,
-    price: 1.0,
-  },
-  {
-    assetName: "DAI",
-    totalBorrow: 4000000,
-    totalSupply: 10000000,
-    liquidity: 6000000,
-    price: 1.0,
-  },
-];

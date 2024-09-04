@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { getItokenDetails } from "../../utils/ethersUtils";
 import ReactLoading from "react-loading";
+import { ITOKEN_ADDRESS } from "../../utils/constants";
 
-const LendBorrowPlatformDetails = () => {
+const LendBorrowPlatformDetails = ({ totalSuppliesSum, totalBorrowsSum }) => {
   const [itokenDetails, setItokenDetails] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
-      const details = await getItokenDetails();
+      const details = await getItokenDetails(ITOKEN_ADDRESS);
       setItokenDetails(details);
       setIsLoading(false);
     };
@@ -29,7 +30,7 @@ const LendBorrowPlatformDetails = () => {
               width={20}
             />
           ) : (
-            itokenDetails.totalReserves
+            totalSuppliesSum && totalSuppliesSum.toString().slice(0, 6)
           )}
         </div>
       </div>
@@ -47,7 +48,7 @@ const LendBorrowPlatformDetails = () => {
               width={20}
             />
           ) : (
-            itokenDetails.totalBorrows
+            totalBorrowsSum && totalBorrowsSum.toString().slice(0, 6)
           )}
         </div>
       </div>

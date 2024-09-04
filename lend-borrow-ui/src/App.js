@@ -11,6 +11,8 @@ const App = () => {
   const { address, tokenBal } = useContext(Context);
   const [selectedAsset, setSelectedAsset] = useState({});
   const [isAccountsComponent, setIsAccountsComponent] = useState(false);
+  const [totalSuppliesSum, setTotalSuppliesSum] = useState(0);
+  const [totalBorrowsSum, setTotalBorrowsSum] = useState(0);
 
   return (
     <div className="app">
@@ -26,14 +28,21 @@ const App = () => {
                 <div className="dashboard-title">Dashboard</div>
 
                 <div className="dashboard-subheading">Platform Details</div>
-                <LendBorrowPlatformDetails />
+                <LendBorrowPlatformDetails
+                  totalSuppliesSum={totalSuppliesSum}
+                  totalBorrowsSum={totalBorrowsSum}
+                />
                 <div
                   style={{ marginTop: "25px" }}
                   className="dashboard-subheading"
                 >
                   All Available Assets
                 </div>
-                <AllAssetsList setSelectedAsset={setSelectedAsset} />
+                <AllAssetsList
+                  setSelectedAsset={setSelectedAsset}
+                  setTotalBorrowsSum={setTotalBorrowsSum}
+                  setTotalSuppliesSum={setTotalSuppliesSum}
+                />
               </div>
             ) : (
               <TransactionsCard

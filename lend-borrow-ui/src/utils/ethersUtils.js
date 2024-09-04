@@ -3,7 +3,6 @@ import {
   NETWORK_DETAILS,
   ITOKEN_ADDRESS,
   ITOKEN_MANAGER_ADDRESS,
-  UNDERLYING_TOKEN_ADDRESS,
 } from "./constants";
 import {
   CONTRACT_ABI,
@@ -109,21 +108,21 @@ export const getCollateral = async (accountAddr, tokenAddr) => {
   return collateral;
 };
 
-export const getItokenDetails = async () => {
+export const getItokenDetails = async (iTokenAddress) => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
 
-  let tokenContract = new ethers.Contract(ITOKEN_ADDRESS, CONTRACT_ABI, signer);
+  let tokenContract = new ethers.Contract(iTokenAddress, CONTRACT_ABI, signer);
 
   const totalBorrows = await tokenContract.totalBorrows();
   const totalBorrowsInDecimals = ethers.utils.formatUnits(totalBorrows, 18);
 
-  const totalReserves = await tokenContract.totalReserves();
-  const totalReservesInDecimals = ethers.utils.formatUnits(totalReserves, 18);
+  const totalSupply = await tokenContract.totalSupply();
+  const totalSupplyInDecimals = ethers.utils.formatUnits(totalSupply, 18);
 
   return {
     totalBorrows: totalBorrowsInDecimals,
-    totalReserves: totalReservesInDecimals,
+    totalSupply: totalSupplyInDecimals,
   };
 };
 
@@ -147,25 +146,54 @@ export const getTokenDetails = async (tokenAddress, accountAddress) => {
     tokenBalance: balance,
   };
 };
-export const getTokenBalance = async () => {
+
+export const getTokenBalance = async (contractAddress) => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
 
   let tokenContract = new ethers.Contract(
-    UNDERLYING_TOKEN_ADDRESS,
-    UNDERLYING_CONTRACT_ABI,
+    contractAddress,
+    CONTRACT_ABI,
     signer
   );
   const signerAdd = await signer.getAddress();
   const balance = await tokenContract.balanceOf(signerAdd);
   const balanceInWei = balance.toString();
-  const balanceInDecimals = ethers.utils.formatUnits(balanceInWei, 8);
-  return balanceInDecimals.slice(0, 10);
+  const balanceInDecimals = ethers.utils.formatUnits(balanceInWei, 18);
+  return balanceInDecimals.slice(0, 6);
 };
+
 export const getAllSupportedTokens = async () => {
   const ITokenManagerInstance = await getContract(
     ITOKEN_MANAGER_ADDRESS,
     ITOKEN_MANAGER_CONTRACT_ABI
   );
-  return await ITokenManagerInstance.getAllSupportedTokens();
+
+  // Fetch the list of all supported IToken addresses
+  const allItokensList = await ITokenManagerInstance.getAllSupportedTokens();
+
+  // Initialize arrays to store the underlying tokens and iTokens
+  let underlyingSupported = [];
+  let iTokenSupported = [];
+
+  // Loop through each IToken address and fetch the underlying token address
+  for (const iTokenAddress of allItokensList) {
+    const ITokenInstance = await getContract(iTokenAddress, CONTRACT_ABI);
+    const underlyingAddress = await ITokenInstance.underlying();
+
+    underlyingSupported.push(underlyingAddress);
+    iTokenSupported.push(iTokenAddress);
+  }
+
+  // Create the final JSON object with two entries
+  const result = {
+    underlyingSupported: underlyingSupported,
+    iTokenSupported: iTokenSupported,
+  };
+  return result;
+};
+
+export const getTokenName = async (contractAddress) => {
+  const instance = await getContract(contractAddress, UNDERLYING_CONTRACT_ABI);
+  return await instance.symbol();
 };

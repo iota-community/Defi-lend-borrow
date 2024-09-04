@@ -16,9 +16,34 @@ export const CONTRACT_ABI = [
         name: "_tokenManager",
         type: "address",
       },
+      {
+        internalType: "uint256",
+        name: "maxBorrowRateMantissa",
+        type: "uint256",
+      },
+      {
+        internalType: "string",
+        name: "tokenName",
+        type: "string",
+      },
+      {
+        internalType: "string",
+        name: "tokenSymbol",
+        type: "string",
+      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
+  },
+  {
+    inputs: [],
+    name: "BorrowCashNotAvailable",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "BorrowRateTooMuch",
+    type: "error",
   },
   {
     inputs: [
@@ -108,7 +133,22 @@ export const CONTRACT_ABI = [
   },
   {
     inputs: [],
+    name: "InsufficientBalance",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "NO_ERROR",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "ReentrancyGuardReentrantCall",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ZeroAddressNotAllowed",
     type: "error",
   },
   {
@@ -160,6 +200,69 @@ export const CONTRACT_ABI = [
     ],
     name: "Transfer",
     type: "event",
+  },
+  {
+    inputs: [],
+    name: "ONE_MANTISSA",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "accountBorrows",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "principal",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "interestIndex",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "accrualBlockNumber",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "accrueInterest",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "nonpayable",
+    type: "function",
   },
   {
     inputs: [
@@ -232,8 +335,13 @@ export const CONTRACT_ABI = [
     inputs: [
       {
         internalType: "uint256",
-        name: "amount",
+        name: "borrowAmount",
         type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
       },
     ],
     name: "borrow",
@@ -248,14 +356,8 @@ export const CONTRACT_ABI = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    name: "borrows",
+    inputs: [],
+    name: "borrowIndex",
     outputs: [
       {
         internalType: "uint256",
@@ -274,6 +376,48 @@ export const CONTRACT_ABI = [
         internalType: "uint8",
         name: "",
         type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "address_",
+        type: "address",
+      },
+    ],
+    name: "ensureNonzeroAddress",
+    outputs: [],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "getAccountSnapshot",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
       },
     ],
     stateMutability: "view",
@@ -373,8 +517,13 @@ export const CONTRACT_ABI = [
     inputs: [
       {
         internalType: "uint256",
-        name: "amount",
+        name: "repayAmount",
         type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "borrower",
+        type: "address",
       },
     ],
     name: "repay",
@@ -386,19 +535,6 @@ export const CONTRACT_ABI = [
       },
     ],
     stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "reserveFactorMantissa",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
     type: "function",
   },
   {
@@ -430,19 +566,6 @@ export const CONTRACT_ABI = [
   {
     inputs: [],
     name: "totalBorrows",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "totalReserves",
     outputs: [
       {
         internalType: "uint256",
@@ -1037,6 +1160,70 @@ export const INTEREST_RATE_MODAL_CONTRACT_ABI = [
 
 export const ITOKEN_MANAGER_CONTRACT_ABI = [
   {
+    inputs: [],
+    stateMutability: "nonpayable",
+    type: "constructor",
+  },
+  {
+    inputs: [],
+    name: "BorrowAmountTooMuch",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "OwnableInvalidOwner",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "account",
+        type: "address",
+      },
+    ],
+    name: "OwnableUnauthorizedAccount",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "PriceError",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "RedeemAmountTooMuch",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "token",
+        type: "address",
+      },
+    ],
+    name: "TokenNotListed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "ZeroAddressNotAllowed",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
@@ -1067,6 +1254,25 @@ export const ITOKEN_MANAGER_CONTRACT_ABI = [
       {
         indexed: true,
         internalType: "address",
+        name: "previousOwner",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "OwnershipTransferred",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
         name: "token",
         type: "address",
       },
@@ -1086,6 +1292,19 @@ export const ITOKEN_MANAGER_CONTRACT_ABI = [
     ],
     name: "TokenRemoved",
     type: "event",
+  },
+  {
+    inputs: [],
+    name: "ONE_MANTISSA",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
   },
   {
     inputs: [
@@ -1118,6 +1337,16 @@ export const ITOKEN_MANAGER_CONTRACT_ABI = [
         name: "token",
         type: "address",
       },
+      {
+        internalType: "uint256",
+        name: "tokenUSDPrice",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "tokenCollateralFactor",
+        type: "uint256",
+      },
     ],
     name: "addToken",
     outputs: [],
@@ -1128,28 +1357,97 @@ export const ITOKEN_MANAGER_CONTRACT_ABI = [
     inputs: [
       {
         internalType: "address",
-        name: "account",
+        name: "address_",
+        type: "address",
+      },
+    ],
+    name: "ensureNonzeroAddress",
+    outputs: [],
+    stateMutability: "pure",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAllSupportedTokens",
+    outputs: [
+      {
+        internalType: "address[]",
+        name: "",
+        type: "address[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "owner",
+    outputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "iTokenAddress",
         type: "address",
       },
       {
         internalType: "address",
-        name: "token",
+        name: "redeemer",
         type: "address",
       },
       {
         internalType: "uint256",
-        name: "borrowAmount",
+        name: "amount",
         type: "uint256",
       },
     ],
-    name: "checkCollateral",
-    outputs: [
+    name: "preBorrowChecks",
+    outputs: [],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
       {
-        internalType: "bool",
-        name: "",
-        type: "bool",
+        internalType: "address",
+        name: "ITokenAddress",
+        type: "address",
       },
     ],
+    name: "preMintChecks",
+    outputs: [],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "iTokenAddress",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "redeemer",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "preRedeemChecks",
+    outputs: [],
     stateMutability: "view",
     type: "function",
   },
@@ -1162,6 +1460,13 @@ export const ITOKEN_MANAGER_CONTRACT_ABI = [
       },
     ],
     name: "removeToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "renounceOwnership",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -1189,9 +1494,55 @@ export const ITOKEN_MANAGER_CONTRACT_ABI = [
     inputs: [
       {
         internalType: "address",
-        name: "account",
+        name: "",
         type: "address",
       },
+    ],
+    name: "tokenCollateralFactors",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    name: "tokenUSDPrices",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "newOwner",
+        type: "address",
+      },
+    ],
+    name: "transferOwnership",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
       {
         internalType: "address",
         name: "token",
@@ -1199,11 +1550,11 @@ export const ITOKEN_MANAGER_CONTRACT_ABI = [
       },
       {
         internalType: "uint256",
-        name: "newCollateral",
+        name: "newUSDPrice",
         type: "uint256",
       },
     ],
-    name: "updateCollateral",
+    name: "updateTokenUSDPrice",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
