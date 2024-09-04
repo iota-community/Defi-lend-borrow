@@ -224,4 +224,11 @@ contract ITokenManager is Ownable {
         // Update the USD price for the token
         tokenUSDPrices[token] = newUSDPrice;
     }
+
+    /// @notice Gets the USD price for a given token address.
+    /// @param token The address of the token.
+    /// @return The USD price of the token as a uint256.
+    function getTokenUSDPrice(address token) external view returns (uint256) {
+        return tokenUSDPrices[token];
+    }
 }
