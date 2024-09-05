@@ -5,22 +5,24 @@ async function main() {
   const InterestRateModel = await hre.ethers.getContractFactory(
     "InterestRateModel"
   );
-  const interestRateModelInstance = await InterestRateModel.deploy(10, 2);
+  const interestRateModelInstance = await InterestRateModel.deploy(10, 2); // Provide values according to your will or else you can use these values as well.
   await interestRateModelInstance.waitForDeployment();
   const interestRateModelAddress = await interestRateModelInstance.getAddress();
 
   // Deploy MockERC20 token contract
   const MockERC20 = await hre.ethers.getContractFactory("MockERC20");
-  const totalSupply = hre.ethers.parseUnits("1000", 18); // Deploys with 1000 tokens with 18 decimals
-  const token = await MockERC20.deploy("MockERC20", "MTKN", totalSupply);
+  const initialSupply = hre.ethers.parseUnits("1000000", 18); // Deploys with 1000 tokens with 18 decimals.
+  const token = await MockERC20.deploy(
+    "TOKEN_NAME_HERE",
+    "TOKEN_SYMBOL_HERE",
+    initialSupply
+  );
   await token.waitForDeployment();
   const underlyingAddress = await token.getAddress();
 
   // Deploy ITokenManager contract
   const ITokenManager = await hre.ethers.getContractFactory("ITokenManager");
-  const ITokenManagerInstance = await ITokenManager.deploy(
-    "0x6bf7b21145Cbd7BB0b9916E6eB24EDA8A675D7C0"
-  ); // supra oracle address for shimmer evm
+  const ITokenManagerInstance = await ITokenManager.deploy();
   await ITokenManagerInstance.waitForDeployment();
   const ITokenManagerAddress = await ITokenManagerInstance.getAddress();
 
@@ -30,19 +32,16 @@ async function main() {
     underlyingAddress,
     interestRateModelAddress,
     ITokenManagerAddress,
-    11,
+    "ADD_MAX_BORROW_MANTISSA_NUMBER_HERE",
     "IToken",
     "ITKN"
   );
   await iToken.waitForDeployment();
   const iTokenAddress = await iToken.getAddress();
 
-  console.log("underlyingAddress deployed to:", underlyingAddress);
-  console.log(
-    "interestRateModelAddress deployed to:",
-    interestRateModelAddress
-  );
-  console.log("ITokenManagerAddress deployed to:", ITokenManagerAddress);
+  console.log("underlying token deployed to:", underlyingAddress);
+  console.log("interestRateModel deployed to:", interestRateModelAddress);
+  console.log("ITokenManager deployed to:", ITokenManagerAddress);
   console.log("IToken deployed to:", iTokenAddress);
 }
 
