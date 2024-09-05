@@ -109,12 +109,24 @@ contract ITokenManager is Ownable {
         return supportedTokenList;
     }
 
+    /**
+     * @notice Performs checks before allowing a mint operation.
+     * @dev Reverts if the token address is not listed in the supported tokens.
+     * @param ITokenAddress The address of the token to check.
+     */
     function preMintChecks(address ITokenAddress) external view {
         if (!supportedTokens[ITokenAddress]) {
             revert TokenNotListed(ITokenAddress);
         }
     }
 
+    /**
+     * @notice Performs checks before allowing a redeem operation.
+     * @dev Reverts if the token address is not listed, or if the amount to redeem exceeds the allowable amount based on liquidity.
+     * @param iTokenAddress The address of the token to redeem.
+     * @param redeemer The address of the account redeeming the tokens.
+     * @param amount The amount of tokens to redeem.
+     */
     function preRedeemChecks(
         address iTokenAddress,
         address redeemer,
@@ -140,6 +152,13 @@ contract ITokenManager is Ownable {
         }
     }
 
+    /**
+     * @notice Performs checks before allowing a borrow operation.
+     * @dev Reverts if the token address is not listed, or if the amount to borrow exceeds the allowable amount based on liquidity.
+     * @param iTokenAddress The address of the token to borrow.
+     * @param redeemer The address of the account borrowing the tokens.
+     * @param amount The amount of tokens to borrow.
+     */
     function preBorrowChecks(
         address iTokenAddress,
         address redeemer,
@@ -164,6 +183,16 @@ contract ITokenManager is Ownable {
         }
     }
 
+    /**
+     * @notice Calculates the total collateral and borrow balances of an account.
+     * @dev Iterates over all supported tokens to determine the total collateral and borrow values, adjusting for any specific redeem or borrow amounts.
+     * @param account The address of the account to check liquidity for.
+     * @param iToken The address of the token in question.
+     * @param redeemTokens The amount of tokens to redeem (if any).
+     * @param borrowTokens The amount of tokens to borrow (if any).
+     * @return totalAccountCollaterals The total value of collateral in USD.
+     * @return totalAccountBorrows The total value of borrows in USD.
+     */
     function hasLiquidity(
         address account,
         address iToken,
