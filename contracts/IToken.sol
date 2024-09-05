@@ -162,13 +162,13 @@ contract IToken is ERC20, ReentrancyGuard {
         if (cash < borrowAmount) {
             revert BorrowCashNotAvailable();
         }
-
         uint256 accountBorrowsPrev = _borrowBalanceStored(borrower);
         uint256 accountBorrowsNew = accountBorrowsPrev + borrowAmount;
         uint256 totalBorrowsNew = totalBorrows + borrowAmount;
 
-        underlying.transfer(msg.sender, totalBorrowsNew);
-
+        underlying.transfer(borrower, totalBorrowsNew);
+        accountBorrows[borrower].principal = accountBorrowsNew;
+        totalBorrows = totalBorrows + totalBorrowsNew;
         return true;
     }
 
