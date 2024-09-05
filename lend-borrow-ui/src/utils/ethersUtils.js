@@ -1,9 +1,5 @@
 import { ethers } from "ethers";
-import {
-  NETWORK_DETAILS,
-  ITOKEN_ADDRESS,
-  ITOKEN_MANAGER_ADDRESS,
-} from "./constants";
+import { NETWORK_DETAILS, ITOKEN_MANAGER_ADDRESS } from "./constants";
 import {
   CONTRACT_ABI,
   ITOKEN_MANAGER_CONTRACT_ABI,
@@ -83,23 +79,15 @@ export const getNativeBalance = async () => {
   }
 };
 
-export const getItokenBalance = async () => {
+export const getCollateralOfAddress = async (
+  iTokenAddress,
+  accountAddr,
+  tokenAddr
+) => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
   const signer = provider.getSigner();
 
-  let tokenContract = new ethers.Contract(ITOKEN_ADDRESS, CONTRACT_ABI, signer);
-  const signerAdd = await signer.getAddress();
-  const balance = await tokenContract.balanceOf(signerAdd);
-  const balanceInWei = balance.toString();
-  const balanceInDecimals = ethers.utils.formatUnits(balanceInWei, 18);
-  return balanceInDecimals.slice(0, 10);
-};
-
-export const getCollateral = async (accountAddr, tokenAddr) => {
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-
-  let tokenContract = new ethers.Contract(ITOKEN_ADDRESS, CONTRACT_ABI, signer);
+  let tokenContract = new ethers.Contract(iTokenAddress, CONTRACT_ABI, signer);
   const collateral = await tokenContract.checkCollateral(
     accountAddr,
     tokenAddr
@@ -120,9 +108,15 @@ export const getItokenDetails = async (iTokenAddress) => {
   const totalSupply = await tokenContract.totalSupply();
   const totalSupplyInDecimals = ethers.utils.formatUnits(totalSupply, 18);
 
+  const collateralFactor = await tokenCollateralFactors(iTokenAddress);
+  const collateralFactorInDecimals = ethers.utils.formatUnits(
+    collateralFactor,
+    18
+  );
   return {
     totalBorrows: totalBorrowsInDecimals,
     totalSupply: totalSupplyInDecimals,
+    collateralFactor: collateralFactorInDecimals,
   };
 };
 
@@ -196,4 +190,20 @@ export const getAllSupportedTokens = async () => {
 export const getTokenName = async (contractAddress) => {
   const instance = await getContract(contractAddress, UNDERLYING_CONTRACT_ABI);
   return await instance.symbol();
+};
+
+export const getTokenUsdPrice = async (iTokenContractAddress) => {
+  const instance = await getContract(
+    ITOKEN_MANAGER_ADDRESS,
+    ITOKEN_MANAGER_CONTRACT_ABI
+  );
+  return await instance.getTokenUSDPrice(iTokenContractAddress);
+};
+
+export const tokenCollateralFactors = async (iTokenContractAddress) => {
+  const instance = await getContract(
+    ITOKEN_MANAGER_ADDRESS,
+    ITOKEN_MANAGER_CONTRACT_ABI
+  );
+  return await instance.tokenCollateralFactors(iTokenContractAddress);
 };

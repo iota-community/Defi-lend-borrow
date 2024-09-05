@@ -1,16 +1,6 @@
 import { ethers } from "ethers";
-import {
-  ITOKEN_ADDRESS,
-  UNDERLYING_TOKEN_ADDRESS,
-  INTEREST_RATE_MODAL_ADDRESS,
-  ITOKEN_MANAGER_ADDRESS,
-} from "./constants";
-import {
-  CONTRACT_ABI,
-  INTEREST_RATE_MODAL_CONTRACT_ABI,
-  ITOKEN_MANAGER_CONTRACT_ABI,
-  UNDERLYING_CONTRACT_ABI,
-} from "./contractAbi";
+
+import { CONTRACT_ABI, UNDERLYING_CONTRACT_ABI } from "./contractAbi";
 
 export const getContract = async (contractAddress, contractAbi) => {
   const provider = new ethers.providers.Web3Provider(window.ethereum);
