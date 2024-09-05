@@ -4,8 +4,9 @@ import {
   getAllSupportedTokens,
   getTokenName,
   getItokenDetails,
+  getTokenUsdPrice,
 } from "../utils/ethersUtils";
-import { fetchTokenPrice } from "../utils/fetchTokenPrices";
+import { ethers } from "ethers";
 
 const AccountDetails = ({ setIsAccountsComponent }) => {
   const { address } = useContext(Context);
@@ -23,7 +24,8 @@ const AccountDetails = ({ setIsAccountsComponent }) => {
         underlyingSupported.map(async (underlyingAddress, index) => {
           const iTokenAddress = iTokenSupported[index];
           const tokenName = await getTokenName(underlyingAddress);
-          const tokenPriceInUSD = await fetchTokenPrice(tokenName);
+          // const tokenPriceInUSD = await getTokenUsdPrice(iTokenAddress);
+          const tokenPriceInUSD = 1;
           const tokenDetails = await getItokenDetails(iTokenAddress);
 
           return {
@@ -38,10 +40,17 @@ const AccountDetails = ({ setIsAccountsComponent }) => {
       );
 
       setAllAssets(assetsArray);
-      setIsLoading(false);
     };
     init();
+    setIsLoading(false);
   }, []);
+
+  const formatBigNumber = (value) => {
+    if (ethers.BigNumber.isBigNumber(value)) {
+      return parseFloat(ethers.utils.formatUnits(value, 18));
+    }
+    return parseFloat(value);
+  };
 
   return (
     <div>
@@ -78,9 +87,11 @@ const AccountDetails = ({ setIsAccountsComponent }) => {
               <div key={index} className="asset-row">
                 <div className="row-entry">{asset.assetName}</div>
                 <div className="row-entry">
-                  {asset.totalSupply.toLocaleString()}
+                  {formatBigNumber(asset.totalSupply).toFixed(3)}
                 </div>
-                <div className="row-entry">{`$${asset.price}`}</div>
+                <div className="row-entry">{`$${
+                  asset.price && asset.price.toFixed(2)
+                }`}</div>
               </div>
             ))}
           </div>
@@ -105,10 +116,13 @@ const AccountDetails = ({ setIsAccountsComponent }) => {
             {allAssets.map((asset, index) => (
               <div key={index} className="asset-row">
                 <div className="row-entry">{asset.assetName}</div>
+
                 <div className="row-entry">
-                  {asset.totalBorrow.toLocaleString()}
+                  {formatBigNumber(asset.totalBorrow).toFixed(3)}
                 </div>
-                <div className="row-entry">{`$${asset.price.toFixed(2)}`}</div>
+                <div className="row-entry">{`$${
+                  asset.price && asset.price.toFixed(2)
+                }`}</div>
               </div>
             ))}
           </div>

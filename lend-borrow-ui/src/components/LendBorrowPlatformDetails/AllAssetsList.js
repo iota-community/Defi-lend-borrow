@@ -5,7 +5,7 @@ import {
   getItokenDetails,
 } from "../../utils/ethersUtils";
 import ReactLoading from "react-loading";
-import { fetchTokenPrice } from "../../utils/fetchTokenPrices";
+import { getTokenUsdPrice } from "../../utils/ethersUtils";
 
 const AllAssetsList = ({
   setSelectedAsset,
@@ -30,8 +30,8 @@ const AllAssetsList = ({
 
           // Fetch data from the underlying token
           const tokenName = await getTokenName(underlyingAddress);
-          const tokenPriceInUSD = await fetchTokenPrice(tokenName);
-
+          // const tokenPriceInUSD = await getTokenUsdPrice(iTokenAddress);
+          const tokenPriceInUSD = 1;
           // Fetch data from the iToken
           const tokenDetails = await getItokenDetails(iTokenAddress);
 
@@ -62,50 +62,57 @@ const AllAssetsList = ({
       setTotalSuppliesSum(totalSupplies);
       setTotalBorrowsSum(totalBorrows);
     };
-
     init();
     setIsLoading(false);
   }, []);
+  console.log("allAssets", allAssets);
 
   return (
-    <div className="list" style={{ width: "80%" }}>
-      <div className="headers-list">
-        <div className="headers">Asset</div>
-        <div className="headers"> Address</div>
-        <div className="headers">Total Borrow</div>
-        <div className="headers">Total Supply</div>
-        <div className="headers">Collateral Factor</div>
-        <div className="headers">Price</div>
-      </div>
-      {isLoading ? (
-        <ReactLoading type={"spin"} color={"white"} height={20} width={20} />
-      ) : (
-        allAssets.map((asset, index) => (
-          <div
-            key={index}
-            className="asset-row"
-            onClick={() => setSelectedAsset(asset)}
-          >
-            <div className="row-entry">{asset.assetName}</div>
-
-            <div className="row-entry">{`${asset.iTokenAddress.substring(
-              0,
-              7
-            )}...`}</div>
-            <div className="row-entry">
-              {asset.totalBorrow && asset.totalBorrow.slice(0, 6)}
-            </div>
-            <div className="row-entry">
-              {asset.totalSupply && asset.totalSupply.slice(0, 6)}
-            </div>
-            <div className="row-entry">
-              {asset.collateralFactor
-                ? asset.collateralFactor.toString()
-                : "N/A"}
-            </div>
-            <div className="row-entry">{`$${asset.price.toFixed(2)}`}</div>
+    <div>
+      {!isLoading ? (
+        <div className="list" style={{ width: "80%" }}>
+          <div className="headers-list">
+            <div className="headers">Asset</div>
+            <div className="headers"> Address</div>
+            <div className="headers">Total Borrow</div>
+            <div className="headers">Total Supply</div>
+            <div className="headers">Collateral Factor</div>
+            <div className="headers">Price</div>
           </div>
-        ))
+          {allAssets.map((asset, index) => (
+            <div
+              key={index}
+              className="asset-row"
+              onClick={() => setSelectedAsset(asset)}
+            >
+              <div className="row-entry">{asset.assetName}</div>
+
+              <div className="row-entry">{`${asset.iTokenAddress.substring(
+                0,
+                7
+              )}...`}</div>
+              <div className="row-entry">
+                {asset.totalBorrow && asset.totalBorrow.slice(0, 6)}
+              </div>
+              <div className="row-entry">
+                {asset.totalSupply && asset.totalSupply.slice(0, 6)}
+              </div>
+              <div className="row-entry">
+                {asset.collateralFactor
+                  ? asset.collateralFactor.toString()
+                  : "N/A"}
+              </div>
+              {asset.price && (
+                <div className="row-entry">{`$${asset.price?.toFixed(2)}`}</div>
+              )}
+            </div>
+          ))}
+        </div>
+      ) : (
+        <>
+          "Loading Tokens data ......"
+          <ReactLoading type={"spin"} color={"white"} height={20} width={20} />
+        </>
       )}
     </div>
   );
