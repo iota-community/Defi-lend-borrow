@@ -17,6 +17,7 @@ contract ITokenManager is Ownable {
     /// @notice Mapping of token addresses to their USD prices
     mapping(address => uint256) public tokenUSDPrices;
 
+    /// @notice Mapping of token addresses to their collateral factors
     mapping(address => uint256) public tokenCollateralFactors;
 
     uint256 public constant ONE_MANTISSA = 1e18;
@@ -30,11 +31,11 @@ contract ITokenManager is Ownable {
         uint256 newCollateral
     );
 
+    /// @notice Custom errors
     error TokenNotListed(address token);
     error PriceError(address token);
     error RedeemAmountTooMuch();
     error BorrowAmountTooMuch();
-    /// @notice Thrown if the supplied address is a zero address where it is not allowed
     error ZeroAddressNotAllowed();
 
     /// @notice Only allow supported tokens
@@ -47,7 +48,6 @@ contract ITokenManager is Ownable {
 
     /// @notice Checks if the provided address is nonzero, reverts otherwise
     /// @param address_ Address to check
-    /// @custom:error ZeroAddressNotAllowed is thrown if the provided address is a zero address
     function ensureNonzeroAddress(address address_) public pure {
         if (address_ == address(0)) {
             revert ZeroAddressNotAllowed();
@@ -57,6 +57,8 @@ contract ITokenManager is Ownable {
     /**
      * @notice Adds a new IToken to the manager
      * @param token The address of the IToken to add
+     * @param tokenUSDPrice The USD price of the token
+     * @param tokenCollateralFactor The collateral factor of the token
      */
     function addToken(
         address token,
@@ -64,12 +66,13 @@ contract ITokenManager is Ownable {
         uint256 tokenCollateralFactor
     ) external onlyOwner {
         ensureNonzeroAddress(token);
-
         require(!supportedTokens[token], "Token already added");
+
         supportedTokens[token] = true;
         tokenUSDPrices[token] = tokenUSDPrice;
         tokenCollateralFactors[token] = tokenCollateralFactor;
-        supportedTokenList.push(token); // Add token to the list
+        supportedTokenList.push(token);
+
         emit TokenAdded(token);
     }
 
@@ -79,8 +82,8 @@ contract ITokenManager is Ownable {
      */
     function removeToken(address token) external onlyOwner {
         ensureNonzeroAddress(token);
-
         require(supportedTokens[token], "Token not found");
+
         delete supportedTokens[token];
         delete tokenUSDPrices[token];
 
@@ -100,7 +103,7 @@ contract ITokenManager is Ownable {
 
     /**
      * @notice Returns the list of all supported tokens
-     * @return address[] array of supported token addresses
+     * @return address[] Array of supported token addresses
      */
     function getAllSupportedTokens() external view returns (address[] memory) {
         return supportedTokenList;
@@ -225,9 +228,9 @@ contract ITokenManager is Ownable {
         tokenUSDPrices[token] = newUSDPrice;
     }
 
-    /// @notice Gets the USD price for a given token address.
-    /// @param token The address of the token.
-    /// @return The USD price of the token as a uint256.
+    /// @notice Gets the USD price for a given token address
+    /// @param token The address of the token
+    /// @return The USD price of the token as a uint256
     function getTokenUSDPrice(address token) external view returns (uint256) {
         return tokenUSDPrices[token];
     }
