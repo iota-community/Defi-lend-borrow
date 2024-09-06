@@ -9,7 +9,7 @@ contract ITokenManager is Ownable {
     mapping(address => bool) public supportedTokens;
 
     /// @notice Array to store all supported iToken addresses
-    address[] private supportedTokenList;
+    address[] public supportedTokenList;
 
     /// @notice Mapping of account addresses to collateral balances
     mapping(address => mapping(address => uint256)) public accountCollaterals;
@@ -57,8 +57,8 @@ contract ITokenManager is Ownable {
     /**
      * @notice Adds a new IToken to the manager
      * @param token The address of the IToken to add
-     * @param tokenUSDPrice The USD price of the token
-     * @param tokenCollateralFactor The collateral factor of the token
+     * @param tokenUSDPrice The USD price of the token in Mantissa
+     * @param tokenCollateralFactor The collateral factor of the token in Mantissa
      */
     function addToken(
         address token,
@@ -66,7 +66,16 @@ contract ITokenManager is Ownable {
         uint256 tokenCollateralFactor
     ) external onlyOwner {
         ensureNonzeroAddress(token);
-        require(!supportedTokens[token], "Token already added");
+
+        // Use revert if the token has already been added
+        if (supportedTokens[token]) {
+            revert("Token already added");
+        }
+
+        // Revert if collateral factor is greater than 1e18 (1 Mantissa)
+        if (tokenCollateralFactor > 1e18) {
+            revert("Collateral factor cannot be greater than 1");
+        }
 
         supportedTokens[token] = true;
         tokenUSDPrices[token] = tokenUSDPrice;
@@ -99,14 +108,6 @@ contract ITokenManager is Ownable {
         }
 
         emit TokenRemoved(token);
-    }
-
-    /**
-     * @notice Returns the list of all supported tokens
-     * @return address[] Array of supported token addresses
-     */
-    function getAllSupportedTokens() external view returns (address[] memory) {
-        return supportedTokenList;
     }
 
     /**
@@ -225,17 +226,21 @@ contract ITokenManager is Ownable {
 
             totalAccountCollaterals += iTokenWithCollateralInUSD;
 
-            uint256 tokenBorrowsInUSD = (tokenUSDPrices[assets[i]] * borrowBalance) / ONE_MANTISSA;
+            uint256 tokenBorrowsInUSD = (tokenUSDPrices[assets[i]] *
+                borrowBalance) / ONE_MANTISSA;
 
             totalAccountBorrows += tokenBorrowsInUSD;
 
             if (iToken == assets[i]) {
-                uint256 redeemTokenWithCollateralInUSD = (tokenUSDPrices[assets[i]] *
-                    redeemTokens) / ONE_MANTISSA;
+                uint256 redeemTokenWithCollateralInUSD = (tokenUSDPrices[
+                    assets[i]
+                ] * redeemTokens) / ONE_MANTISSA;
 
                 totalAccountCollaterals -= redeemTokenWithCollateralInUSD;
 
-                tokenBorrowsInUSD = (tokenUSDPrices[assets[i]] * borrowTokens) / ONE_MANTISSA;
+                tokenBorrowsInUSD =
+                    (tokenUSDPrices[assets[i]] * borrowTokens) /
+                    ONE_MANTISSA;
                 totalAccountBorrows += tokenBorrowsInUSD;
             }
         }
@@ -254,12 +259,5 @@ contract ITokenManager is Ownable {
 
         // Update the USD price for the token
         tokenUSDPrices[token] = newUSDPrice;
-    }
-
-    /// @notice Gets the USD price for a given token address
-    /// @param token The address of the token
-    /// @return The USD price of the token as a uint256
-    function getTokenUSDPrice(address token) external view returns (uint256) {
-        return tokenUSDPrices[token];
     }
 }

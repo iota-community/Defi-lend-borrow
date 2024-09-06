@@ -129,7 +129,6 @@ contract IToken is ERC20, ReentrancyGuard {
         uint256 balanceAfter = accountTokens[msg.sender] + mintTokens;
         accountTokens[msg.sender] = balanceAfter;
 
-        // emit event
         emit Mint(msg.sender, amount, mintTokens);
 
         return true;
@@ -159,7 +158,6 @@ contract IToken is ERC20, ReentrancyGuard {
 
         underlying.transfer(msg.sender, amount);
 
-        // emit event
         emit Redeem(msg.sender, amount, redeemITokenAmount);
 
         return true;
@@ -192,22 +190,9 @@ contract IToken is ERC20, ReentrancyGuard {
         accountBorrows[borrower].principal = accountBorrowsNew;
         totalBorrows = totalBorrowsNew;
 
-        //emit event
         emit Borrow(borrower, borrowAmount, accountBorrowsNew, totalBorrowsNew);
 
         return true;
-    }
-
-    function _doTransferIn(
-        address from,
-        uint256 amount
-    ) internal virtual returns (uint256) {
-        IERC20 token = IERC20(underlying);
-        uint256 balanceBefore = token.balanceOf(address(this));
-        token.transferFrom(from, address(this), amount);
-        uint256 balanceAfter = token.balanceOf(address(this));
-        // Return the amount that was *actually* transferred
-        return balanceAfter - balanceBefore;
     }
 
     /**
@@ -221,23 +206,22 @@ contract IToken is ERC20, ReentrancyGuard {
     ) external nonReentrant returns (bool) {
         accrueInterest();
 
-        uint256 accountBorrowsPrev = _borrowBalanceStored(msg.sender);
+        uint256 accountBorrowsPrev = _borrowBalanceStored(borrower);
         uint256 repayAmountFinal = repayAmount >= accountBorrowsPrev
             ? accountBorrowsPrev
             : repayAmount;
+            
         underlying.transferFrom(msg.sender, address(this), repayAmountFinal);
-        uint256 actualRepayAmount = _doTransferIn(borrower, repayAmountFinal);
 
-        uint256 accountBorrowsNew = accountBorrowsPrev - actualRepayAmount;
-        uint256 totalBorrowsNew = totalBorrows - actualRepayAmount;
+        uint256 accountBorrowsNew = accountBorrowsPrev - repayAmountFinal;
+        uint256 totalBorrowsNew = totalBorrows - repayAmountFinal;
 
         /* We write the previously calculated values into storage */
         accountBorrows[borrower].principal = accountBorrowsNew;
         accountBorrows[borrower].interestIndex = borrowIndex;
         totalBorrows = totalBorrowsNew;
 
-        //emit event
-        emit Repay(msg.sender, borrower, actualRepayAmount, accountBorrowsNew);
+        emit Repay(msg.sender, borrower, repayAmountFinal, accountBorrowsNew);
 
         return true;
     }
@@ -292,6 +276,7 @@ contract IToken is ERC20, ReentrancyGuard {
             cashPrior,
             borrowsPrior
         );
+
         if (borrowRateMantissa >= MAX_BORROW_RATE_MANTISSA) {
             revert BorrowRateTooMuch();
         }
@@ -308,10 +293,10 @@ contract IToken is ERC20, ReentrancyGuard {
          */
 
         uint256 simpleInterestFactor = borrowRateMantissa * blockDelta;
-        uint256 interestAccumulated = simpleInterestFactor * borrowsPrior;
+        uint256 interestAccumulated = (simpleInterestFactor * borrowsPrior)/ONE_MANTISSA;
         uint256 totalBorrowsNew = interestAccumulated + borrowsPrior;
 
-        uint256 borrowIndexNew = (simpleInterestFactor * borrowIndexPrior) +
+        uint256 borrowIndexNew = ((simpleInterestFactor * borrowIndexPrior)/ONE_MANTISSA) +
             borrowIndexPrior;
 
         /////////////////////////

@@ -74,9 +74,7 @@ contract InterestRateModel is IInterestRateModel {
      * @return The supply rate percentage per block as a mantissa (scaled by BASE)
      */
     function getSupplyRate(uint cash, uint borrows) public view returns (uint) {
-        uint oneMinusReserveFactor = BASE;
         uint borrowRate = getBorrowRate(cash, borrows);
-        uint rateToPool = (borrowRate * oneMinusReserveFactor) / BASE;
-        return (utilizationRate(cash, borrows) * rateToPool) / BASE;
+        return (utilizationRate(cash, borrows) * borrowRate) / BASE;
     }
 }
