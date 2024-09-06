@@ -3,7 +3,6 @@ import {
   getNativeBalance,
   getSignerAddress,
   isValidAddress,
-  getItokenBalance,
   changeNetwork,
 } from "../utils/ethersUtils";
 
@@ -23,9 +22,7 @@ export const WalletProvider = ({ children }) => {
           await changeNetwork();
           const addr = await getSignerAddress();
           const bnbBalance = await getNativeBalance();
-          // const tokenBalance = await getItokenBalance();
           setBnbBal(bnbBalance);
-          // setTokenBal(tokenBalance);
           setAddress(addr);
         }
       } catch (err) {
@@ -42,9 +39,7 @@ export const WalletProvider = ({ children }) => {
   const fetchBalances = async () => {
     if (isValidAddress(address)) {
       const bnbBalance = await getNativeBalance();
-      const tokenBalance = await getItokenBalance();
       setBnbBal(bnbBalance);
-      setTokenBal(tokenBalance);
     }
   };
 
@@ -54,9 +49,7 @@ export const WalletProvider = ({ children }) => {
         await changeNetwork();
         const addr = await getSignerAddress();
         const bnbBalance = await getNativeBalance();
-        const tokenBalance = await getItokenBalance();
         setBnbBal(bnbBalance);
-        setTokenBal(tokenBalance);
         setAddress(addr);
       }
     } catch (err) {
