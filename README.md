@@ -42,7 +42,7 @@ ETHERSCAN_API_KEY=<Your_ETHERSCAN_API_KEY>
 
 ### 4. Deploy the Contracts
 
-Use Hardhat to compile and deploy the contracts on the IOTA EVM testnet.
+Using Hardhat, compile and deploy the contracts on the IOTA EVM testnet, ensuring that the deploy script properly includes the required constructor arguments.
 
 ```bash
 npx hardhat compile
