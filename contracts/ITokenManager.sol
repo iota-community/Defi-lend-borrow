@@ -8,7 +8,7 @@ contract ITokenManager is Ownable {
     /// @notice Mapping of IToken addresses to a boolean indicating whether they are supported
     mapping(address => bool) public supportedTokens;
 
-    /// @notice Array to store all supported token addresses
+    /// @notice Array to store all supported iToken addresses
     address[] private supportedTokenList;
 
     /// @notice Mapping of account addresses to collateral balances
@@ -125,7 +125,7 @@ contract ITokenManager is Ownable {
      * @dev Reverts if the token address is not listed, or if the amount to redeem exceeds the allowable amount based on liquidity.
      * @param iTokenAddress The address of the token to redeem.
      * @param redeemer The address of the account redeeming the tokens.
-     * @param amount The amount of tokens to redeem.
+     * @param amount The amount of underlying token to redeem.
      */
     function preRedeemChecks(
         address iTokenAddress,
@@ -136,16 +136,16 @@ contract ITokenManager is Ownable {
             revert TokenNotListed(iTokenAddress);
         }
 
-        uint256 collaterals;
-        uint256 borrows;
-        (collaterals, borrows) = hasLiquidity(
+        uint256 totalCollateralsInUSD;
+        uint256 totalBorrowsInUSD;
+        (totalCollateralsInUSD, totalBorrowsInUSD) = hasLiquidity(
             redeemer,
             iTokenAddress,
             amount,
             0
         );
 
-        uint256 canRedeem = collaterals - borrows;
+        int256 canRedeem = int256(totalCollateralsInUSD - totalBorrowsInUSD);
 
         if (canRedeem < 0) {
             revert RedeemAmountTooMuch();
@@ -168,16 +168,16 @@ contract ITokenManager is Ownable {
             revert TokenNotListed(iTokenAddress);
         }
 
-        uint256 collaterals;
-        uint256 borrows;
-        (collaterals, borrows) = hasLiquidity(
+        uint256 totalCollateralsInUSD;
+        uint256 totalBorrowsInUSD;
+        (totalCollateralsInUSD, totalBorrowsInUSD) = hasLiquidity(
             redeemer,
             iTokenAddress,
             0,
             amount
         );
 
-        uint256 canBorrow = collaterals - borrows;
+        int256 canBorrow = int256(totalCollateralsInUSD - totalBorrowsInUSD);
         if (canBorrow < 0) {
             revert BorrowAmountTooMuch();
         }
@@ -188,8 +188,8 @@ contract ITokenManager is Ownable {
      * @dev Iterates over all supported tokens to determine the total collateral and borrow values, adjusting for any specific redeem or borrow amounts.
      * @param account The address of the account to check liquidity for.
      * @param iToken The address of the token in question.
-     * @param redeemTokens The amount of tokens to redeem (if any).
-     * @param borrowTokens The amount of tokens to borrow (if any).
+     * @param redeemTokens The amount of underlying token to redeem (if any).
+     * @param borrowTokens The amount of underlying token to borrow (if any).
      * @return totalAccountCollaterals The total value of collateral in USD.
      * @return totalAccountBorrows The total value of borrows in USD.
      */
@@ -215,29 +215,28 @@ contract ITokenManager is Ownable {
             (iTokenBalance, borrowBalance, exchangeRateMantissa) = asset
                 .getAccountSnapshot(account);
 
-            uint256 iTokenPrice = (exchangeRateMantissa *
+            uint256 iTokenPriceInUSD = (exchangeRateMantissa *
                 tokenUSDPrices[assets[i]]) / ONE_MANTISSA;
-            uint256 iTokenWithCollateral = (iTokenPrice *
+
+            uint256 iTokenWithCollateralInUSD = (iTokenPriceInUSD *
                 iTokenBalance *
                 tokenCollateralFactors[assets[i]]) /
                 (ONE_MANTISSA * ONE_MANTISSA);
 
-            totalAccountCollaterals += iTokenWithCollateral;
+            totalAccountCollaterals += iTokenWithCollateralInUSD;
 
-            uint256 tokenBorrows = (iTokenPrice * borrowBalance) / ONE_MANTISSA;
+            uint256 tokenBorrowsInUSD = (tokenUSDPrices[assets[i]] * borrowBalance) / ONE_MANTISSA;
 
-            totalAccountBorrows += tokenBorrows;
+            totalAccountBorrows += tokenBorrowsInUSD;
 
             if (iToken == assets[i]) {
-                uint256 redeemTokenWithCollateral = (iTokenPrice *
-                    redeemTokens *
-                    tokenCollateralFactors[assets[i]]) /
-                    (ONE_MANTISSA * ONE_MANTISSA);
+                uint256 redeemTokenWithCollateralInUSD = (tokenUSDPrices[assets[i]] *
+                    redeemTokens) / ONE_MANTISSA;
 
-                totalAccountCollaterals -= redeemTokenWithCollateral;
+                totalAccountCollaterals -= redeemTokenWithCollateralInUSD;
 
-                tokenBorrows = (iTokenPrice * borrowTokens) / ONE_MANTISSA;
-                totalAccountBorrows += tokenBorrows;
+                tokenBorrowsInUSD = (tokenUSDPrices[assets[i]] * borrowTokens) / ONE_MANTISSA;
+                totalAccountBorrows += tokenBorrowsInUSD;
             }
         }
     }

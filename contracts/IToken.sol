@@ -103,21 +103,20 @@ contract IToken is ERC20, ReentrancyGuard {
         uint256 exchangeRate = _exchangeRateStored();
         underlying.transferFrom(msg.sender, address(this), amount);
 
-        uint256 mintTokens = exchangeRate != 0
-            ? (amount * ONE_MANTISSA) / exchangeRate
-            : (amount * ONE_MANTISSA) / 1;
+        uint256 mintTokens = (amount * ONE_MANTISSA) / exchangeRate;
         _mint(msg.sender, mintTokens);
 
         // Update collateral in ITokenManager
         uint256 balanceAfter = accountTokens[msg.sender] + mintTokens;
         accountTokens[msg.sender] = balanceAfter;
 
+// emit event
         return true;
     }
 
     /**
      * @notice Redeems IToken by withdrawing the underlying token
-     * @param amount The amount of IToken to redeem
+     * @param amount The amount of underlying token to redeem
      * @return bool indicating success
      */
     function redeem(uint256 amount) external nonReentrant returns (bool) {
@@ -126,21 +125,19 @@ contract IToken is ERC20, ReentrancyGuard {
         tokenManager.preRedeemChecks(address(this), msg.sender, amount);
         uint256 exchangeRate = _exchangeRateStored();
 
-        uint256 redeemUnderlyingAmount = exchangeRate != 0
-            ? (amount * exchangeRate) / ONE_MANTISSA
-            : (amount * 1) / ONE_MANTISSA;
+        uint256 redeemITokenAmount = (amount * ONE_MANTISSA) / exchangeRate;
 
-        if (underlying.balanceOf(address(this)) <= redeemUnderlyingAmount) {
+        if (underlying.balanceOf(address(this)) < amount) {
             revert InsufficientBalance();
         }
 
-        _burn(msg.sender, amount);
+        _burn(msg.sender, redeemITokenAmount);
 
-        uint256 balanceAfter = accountTokens[msg.sender] - amount;
+        uint256 balanceAfter = accountTokens[msg.sender] - redeemITokenAmount;
         accountTokens[msg.sender] = balanceAfter;
 
-        underlying.transfer(msg.sender, redeemUnderlyingAmount);
-
+        underlying.transfer(msg.sender, amount);
+ // emit event
         return true;
     }
 
@@ -162,13 +159,16 @@ contract IToken is ERC20, ReentrancyGuard {
         if (cash < borrowAmount) {
             revert BorrowCashNotAvailable();
         }
+
         uint256 accountBorrowsPrev = _borrowBalanceStored(borrower);
         uint256 accountBorrowsNew = accountBorrowsPrev + borrowAmount;
         uint256 totalBorrowsNew = totalBorrows + borrowAmount;
 
-        underlying.transfer(borrower, totalBorrowsNew);
+        underlying.transfer(borrower, borrowAmount);
         accountBorrows[borrower].principal = accountBorrowsNew;
-        totalBorrows = totalBorrows + totalBorrowsNew;
+        totalBorrows = totalBorrowsNew;
+
+        //emit event
         return true;
     }
 
@@ -331,8 +331,8 @@ contract IToken is ERC20, ReentrancyGuard {
          *  exchangeRate = (totalCash + totalBorrows + badDebt - totalReserves) / totalSupply
          */
         uint256 totalCash = underlying.balanceOf(address(this));
-        uint256 cashPlusBorrowsMinusReserves = totalCash + totalBorrows;
-        uint256 exchangeRate = (cashPlusBorrowsMinusReserves * ONE_MANTISSA) /
+        uint256 cashPlusBorrows = totalCash + totalBorrows;
+        uint256 exchangeRate = (cashPlusBorrows * ONE_MANTISSA) /
             _totalSupply;
 
         return exchangeRate;
