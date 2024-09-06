@@ -52,6 +52,25 @@ contract IToken is ERC20, ReentrancyGuard {
 
     uint256 public constant ONE_MANTISSA = 1e18;
 
+    event Mint(address indexed minter, uint256 amount, uint256 mintTokens);
+    event Redeem(
+        address indexed redeemer,
+        uint256 amount,
+        uint256 redeemITokenAmount
+    );
+    event Repay(
+        address indexed payer,
+        address indexed borrower,
+        uint256 repayAmount,
+        uint256 accountBorrowsNew
+    );
+    event Borrow(
+        address indexed borrower,
+        uint256 borrowAmount,
+        uint256 accountBorrowsNew,
+        uint256 totalBorrowsNew
+    );
+
     /// @notice Thrown if the supplied address is a zero address where it is not allowed
     error ZeroAddressNotAllowed();
 
@@ -110,7 +129,9 @@ contract IToken is ERC20, ReentrancyGuard {
         uint256 balanceAfter = accountTokens[msg.sender] + mintTokens;
         accountTokens[msg.sender] = balanceAfter;
 
-// emit event
+        // emit event
+        emit Mint(msg.sender, amount, mintTokens);
+
         return true;
     }
 
@@ -137,7 +158,10 @@ contract IToken is ERC20, ReentrancyGuard {
         accountTokens[msg.sender] = balanceAfter;
 
         underlying.transfer(msg.sender, amount);
- // emit event
+
+        // emit event
+        emit Redeem(msg.sender, amount, redeemITokenAmount);
+
         return true;
     }
 
@@ -169,6 +193,8 @@ contract IToken is ERC20, ReentrancyGuard {
         totalBorrows = totalBorrowsNew;
 
         //emit event
+        emit Borrow(borrower, borrowAmount, accountBorrowsNew, totalBorrowsNew);
+
         return true;
     }
 
@@ -209,6 +235,10 @@ contract IToken is ERC20, ReentrancyGuard {
         accountBorrows[borrower].principal = accountBorrowsNew;
         accountBorrows[borrower].interestIndex = borrowIndex;
         totalBorrows = totalBorrowsNew;
+
+        //emit event
+        emit Repay(msg.sender, borrower, actualRepayAmount, accountBorrowsNew);
+
         return true;
     }
 
@@ -332,8 +362,7 @@ contract IToken is ERC20, ReentrancyGuard {
          */
         uint256 totalCash = underlying.balanceOf(address(this));
         uint256 cashPlusBorrows = totalCash + totalBorrows;
-        uint256 exchangeRate = (cashPlusBorrows * ONE_MANTISSA) /
-            _totalSupply;
+        uint256 exchangeRate = (cashPlusBorrows * ONE_MANTISSA) / _totalSupply;
 
         return exchangeRate;
     }
