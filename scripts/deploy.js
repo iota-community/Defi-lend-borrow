@@ -11,7 +11,7 @@ async function main() {
 
   // Deploy MockERC20 token contract
   const MockERC20 = await hre.ethers.getContractFactory("MockERC20");
-  const initialSupply = hre.ethers.parseUnits("1000000", 18); // Deploys with 1000 tokens with 18 decimals.
+  const initialSupply = hre.ethers.parseUnits("1000000", 18); // Deploys with 1000000 tokens with 18 decimals.
   const token = await MockERC20.deploy(
     "TOKEN_NAME_HERE",
     "TOKEN_SYMBOL_HERE",
