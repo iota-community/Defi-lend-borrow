@@ -104,7 +104,7 @@ const TransactionForm = ({ selectedAsset, activeTab, setSelectedAsset }) => {
 
       {activeTab === "Withdraw" && (
         <div className="transact-details">
-          <div className="details-title">Withdraw balance</div>
+          <div className="details-title">Withdrawable balance</div>
           <div>{withdrawBalance}</div>
         </div>
       )}

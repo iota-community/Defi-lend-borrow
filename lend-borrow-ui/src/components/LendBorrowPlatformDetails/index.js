@@ -6,7 +6,7 @@ const LendBorrowPlatformDetails = ({ totalSuppliesSum, totalBorrowsSum }) => {
       <div className="cardInnerContainer">
         <div className="heading">Total Supplies </div>
         <div className="subHeading">
-          {totalSuppliesSum && totalSuppliesSum.toString().slice(0, 6)}
+          {totalSuppliesSum && `$ ${totalSuppliesSum.toString().slice(0, 6)}`}
         </div>
       </div>
       <div
@@ -15,7 +15,7 @@ const LendBorrowPlatformDetails = ({ totalSuppliesSum, totalBorrowsSum }) => {
       >
         <div className="heading">Total borrows</div>
         <div className="subHeading">
-          {totalBorrowsSum && totalBorrowsSum.toString().slice(0, 6)}
+          {totalBorrowsSum && `$ ${totalBorrowsSum.toString().slice(0, 6)}`}
         </div>
       </div>
     </div>

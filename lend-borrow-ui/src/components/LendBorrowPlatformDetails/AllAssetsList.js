@@ -87,10 +87,15 @@ const AllAssetsList = ({
             >
               <div className="row-entry">{asset.assetName}</div>
 
-              <div className="row-entry">{`${asset.iTokenAddress.substring(
-                0,
-                7
-              )}...`}</div>
+              <div className="row-entry">
+                <a
+                  href={`https://explorer.evm.testnet.shimmer.network/address/${asset.iTokenAddress}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {`${asset.iTokenAddress.substring(0, 7)}...`}
+                </a>
+              </div>
               <div className="row-entry">
                 {asset.totalBorrow && asset.totalBorrow.slice(0, 6)}
               </div>

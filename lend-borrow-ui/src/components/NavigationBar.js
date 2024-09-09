@@ -48,23 +48,25 @@ export const NavigationBar = ({ setIsAccountsComponent }) => {
               >
                 Go to Accounts Section
               </div>
-              <Dropdown isOpen={isDropdownOpen} toggle={toggleDropdown}>
-                <DropdownToggle
-                  tag="span"
-                  onClick={toggleDropdown}
-                  data-toggle="dropdown"
-                  aria-expanded={isDropdownOpen}
-                  className="accountDropdown"
-                >
-                  Address: {formatAddress(address)}
-                </DropdownToggle>
-                <DropdownMenu end>
-                  <DropdownItem>Balance: {bal} </DropdownItem>
-                  <DropdownItem onClick={disconnectWallet}>
-                    Disconnect Wallet
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
+              {address && (
+                <Dropdown isOpen={isDropdownOpen} toggle={toggleDropdown}>
+                  <DropdownToggle
+                    tag="span"
+                    onClick={toggleDropdown}
+                    data-toggle="dropdown"
+                    aria-expanded={isDropdownOpen}
+                    className="accountDropdown"
+                  >
+                    Address: {formatAddress(address)}
+                  </DropdownToggle>
+                  <DropdownMenu end>
+                    <DropdownItem>Balance: {bal} </DropdownItem>
+                    <DropdownItem onClick={disconnectWallet}>
+                      Disconnect Wallet
+                    </DropdownItem>
+                  </DropdownMenu>
+                </Dropdown>
+              )}
             </div>
           )}
         </Nav>

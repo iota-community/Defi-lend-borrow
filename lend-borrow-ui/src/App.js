@@ -8,7 +8,7 @@ import AccountDetails from "./components/AccountDetails";
 import TransactionsCard from "./components/TransactionsCard";
 
 const App = () => {
-  const { address, tokenBal } = useContext(Context);
+  const { address } = useContext(Context);
   const [selectedAsset, setSelectedAsset] = useState({});
   const [isAccountsComponent, setIsAccountsComponent] = useState(false);
   const [totalSuppliesSum, setTotalSuppliesSum] = useState(0);
@@ -19,13 +19,13 @@ const App = () => {
       <div>
         <NavigationBar setIsAccountsComponent={setIsAccountsComponent} />
 
-        {isAccountsComponent ? (
+        {isAccountsComponent && !address ? (
           <AccountDetails setIsAccountsComponent={setIsAccountsComponent} />
         ) : (
           <>
             {!selectedAsset.assetName ? (
               <div className="details-container">
-                <div className="dashboard-title">Dashboard</div>
+                <div className="dashboard-title">DASHBOARD</div>
 
                 <div className="dashboard-subheading">Platform Details</div>
                 <LendBorrowPlatformDetails
