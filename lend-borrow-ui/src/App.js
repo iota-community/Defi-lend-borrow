@@ -22,7 +22,7 @@ const App = () => {
         {isAccountsComponent && !address ? (
           <AccountDetails setIsAccountsComponent={setIsAccountsComponent} />
         ) : (
-          <>
+          <div className="details-container-outer">
             {!selectedAsset.assetName ? (
               <div className="details-container">
                 <div className="dashboard-title">DASHBOARD</div>
@@ -50,7 +50,7 @@ const App = () => {
                 setSelectedAsset={setSelectedAsset}
               />
             )}
-          </>
+          </div>
         )}
       </div>
     </div>
