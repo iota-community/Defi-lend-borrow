@@ -11,7 +11,7 @@ export const Context = createContext();
 export const WalletProvider = ({ children }) => {
   const [address, setAddress] = useState();
   const [tokenBal, setTokenBal] = useState();
-  const [bnbBal, setBnbBal] = useState();
+  const [smrBal, setsmrBal] = useState();
   const [currentGasPrice, setCurrentGasPrice] = useState();
   const [transactionHash, setTransactionHash] = useState("");
   const [transactionList, setTransactionList] = useState([]);
@@ -21,8 +21,8 @@ export const WalletProvider = ({ children }) => {
         if (window.ethereum && window.ethereum.isMetaMask) {
           await changeNetwork();
           const addr = await getSignerAddress();
-          const bnbBalance = await getNativeBalance();
-          setBnbBal(bnbBalance);
+          const smrBalance = await getNativeBalance();
+          setsmrBal(smrBalance);
           setAddress(addr);
         }
       } catch (err) {
@@ -38,8 +38,8 @@ export const WalletProvider = ({ children }) => {
 
   const fetchBalances = async () => {
     if (isValidAddress(address)) {
-      const bnbBalance = await getNativeBalance();
-      setBnbBal(bnbBalance);
+      const smrBalance = await getNativeBalance();
+      setsmrBal(smrBalance);
     }
   };
 
@@ -48,8 +48,8 @@ export const WalletProvider = ({ children }) => {
       if (window.ethereum && window.ethereum.isMetaMask) {
         await changeNetwork();
         const addr = await getSignerAddress();
-        const bnbBalance = await getNativeBalance();
-        setBnbBal(bnbBalance);
+        const smrBalance = await getNativeBalance();
+        setsmrBal(smrBalance);
         setAddress(addr);
       }
     } catch (err) {
@@ -69,7 +69,7 @@ export const WalletProvider = ({ children }) => {
     <Context.Provider
       value={{
         address,
-        bnbBal,
+        smrBal,
         tokenBal,
         connectWallet,
         disconnectWallet,

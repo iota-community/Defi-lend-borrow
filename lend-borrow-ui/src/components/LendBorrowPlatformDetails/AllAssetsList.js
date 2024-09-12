@@ -70,7 +70,7 @@ const AllAssetsList = ({
   return (
     <div>
       {!isLoading ? (
-        <div className="list" style={{ width: "80%" }}>
+        <div className="list">
           <div className="headers-list">
             <div className="headers">Asset</div>
             <div className="headers"> Address</div>

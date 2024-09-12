@@ -15,7 +15,9 @@ const LendBorrowPlatformDetails = ({ totalSuppliesSum, totalBorrowsSum }) => {
       >
         <div className="heading">Total borrows</div>
         <div className="subHeading">
-          {totalBorrowsSum && `$ ${totalBorrowsSum.toString().slice(0, 6)}`}
+          {totalBorrowsSum
+            ? `$ ${totalBorrowsSum.toString().slice(0, 6)}`
+            : "$ 0"}
         </div>
       </div>
     </div>

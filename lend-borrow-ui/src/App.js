@@ -19,7 +19,7 @@ const App = () => {
       <div>
         <NavigationBar setIsAccountsComponent={setIsAccountsComponent} />
 
-        {isAccountsComponent && !address ? (
+        {isAccountsComponent && address ? (
           <AccountDetails setIsAccountsComponent={setIsAccountsComponent} />
         ) : (
           <div className="details-container-outer">

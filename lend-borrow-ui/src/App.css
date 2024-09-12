@@ -212,6 +212,14 @@
   padding: 1rem;
   cursor: pointer;
 }
+.list-accounts {
+  color: white;
+  background-color: rgb(30 36 49);
+  border-radius: 12px;
+  width: 470px !important;
+  padding: 1rem;
+  cursor: pointer;
+}
 .headers-list {
   display: flex;
   font-size: 16px;

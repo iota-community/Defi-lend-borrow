@@ -77,7 +77,7 @@ const AccountDetails = ({ setIsAccountsComponent }) => {
             ⬅
           </button>
 
-          <div className="list">
+          <div className="list-accounts" style={{ width: "470px !important" }}>
             <div className="headers-list">
               <div className="headers">Asset</div>
               <div className="headers">Total Supply</div>
@@ -107,7 +107,7 @@ const AccountDetails = ({ setIsAccountsComponent }) => {
           }}
         >
           <div className="dashboard-subheading">Borrows</div>
-          <div className="list">
+          <div className="list-accounts" style={{ width: "470px !important" }}>
             <div className="headers-list">
               <div className="headers">Asset</div>
               <div className="headers">Total Borrow</div>

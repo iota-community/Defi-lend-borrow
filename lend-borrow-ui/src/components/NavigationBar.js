@@ -14,7 +14,7 @@ import formatAddress from "../utils/formats";
 import { getNativeBalance } from "../utils/ethersUtils";
 
 export const NavigationBar = ({ setIsAccountsComponent }) => {
-  const { address, tokenBal, bnbBal, disconnectWallet } = useContext(Context);
+  const { address, disconnectWallet } = useContext(Context);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   useEffect(() => {
     const init = async () => {
@@ -60,7 +60,7 @@ export const NavigationBar = ({ setIsAccountsComponent }) => {
                     Address: {formatAddress(address)}
                   </DropdownToggle>
                   <DropdownMenu end>
-                    <DropdownItem>Balance: {bal} </DropdownItem>
+                    <DropdownItem>Balance: {bal} SMR </DropdownItem>
                     <DropdownItem onClick={disconnectWallet}>
                       Disconnect Wallet
                     </DropdownItem>
