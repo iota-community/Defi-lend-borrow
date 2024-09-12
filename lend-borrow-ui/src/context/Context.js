@@ -13,8 +13,6 @@ export const WalletProvider = ({ children }) => {
   const [tokenBal, setTokenBal] = useState();
   const [smrBal, setSmrBal] = useState();
   const [currentGasPrice, setCurrentGasPrice] = useState();
-  const [transactionHash, setTransactionHash] = useState("");
-  const [transactionList, setTransactionList] = useState([]);
   useEffect(() => {
     const init = async () => {
       try {
@@ -76,10 +74,6 @@ export const WalletProvider = ({ children }) => {
         fetchBalances,
         currentGasPrice,
         setCurrentGasPrice,
-        transactionHash,
-        setTransactionHash,
-        transactionList,
-        setTransactionList,
       }}
     >
       {children}
