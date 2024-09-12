@@ -11,7 +11,7 @@ export const Context = createContext();
 export const WalletProvider = ({ children }) => {
   const [address, setAddress] = useState();
   const [tokenBal, setTokenBal] = useState();
-  const [smrBal, setsmrBal] = useState();
+  const [smrBal, setSmrBal] = useState();
   const [currentGasPrice, setCurrentGasPrice] = useState();
   const [transactionHash, setTransactionHash] = useState("");
   const [transactionList, setTransactionList] = useState([]);
@@ -22,7 +22,7 @@ export const WalletProvider = ({ children }) => {
           await changeNetwork();
           const addr = await getSignerAddress();
           const smrBalance = await getNativeBalance();
-          setsmrBal(smrBalance);
+          setSmrBal(smrBalance);
           setAddress(addr);
         }
       } catch (err) {
@@ -39,7 +39,7 @@ export const WalletProvider = ({ children }) => {
   const fetchBalances = async () => {
     if (isValidAddress(address)) {
       const smrBalance = await getNativeBalance();
-      setsmrBal(smrBalance);
+      setSmrBal(smrBalance);
     }
   };
 
@@ -49,7 +49,7 @@ export const WalletProvider = ({ children }) => {
         await changeNetwork();
         const addr = await getSignerAddress();
         const smrBalance = await getNativeBalance();
-        setsmrBal(smrBalance);
+        setSmrBal(smrBalance);
         setAddress(addr);
       }
     } catch (err) {
