@@ -89,7 +89,7 @@ const AllAssetsList = ({
 
               <div className="row-entry">
                 <a
-                  href={`https://explorer.evm.testnet.shimmer.network/address/${asset.iTokenAddress}`}
+                  href={`https://explorer.evm.testnet.iotaledger.net/address/${asset.iTokenAddress}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >

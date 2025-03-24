@@ -18,21 +18,21 @@ const config: HardhatUserConfig = {
     }
   },
   networks: {
-    shimmer_evm_testnet: {
-      url: "https://json-rpc.evm.testnet.shimmer.network",
-      chainId: 1073,
+    iota_evm_testnet: {
+      url: "https://json-rpc.evm.testnet.iotaledger.net",
+      chainId: 1075,
       accounts: [priv_key],
-    },
+    },  
   },
   etherscan: {
     apiKey: process.env.ETHERSCAN_API_KEY || "",
     customChains: [
       {
-        network: "shimmer_evm_testnet",
-        chainId: 1073,
+        network: "iota_evm_testnet",
+        chainId: 1075,
         urls: {
-          apiURL: "https://explorer.evm.testnet.shimmer.network/api/",
-          browserURL: "https://explorer.evm.testnet.shimmer.network/",
+          apiURL: "https://explorer.evm.testnet.iotaledger.net/api/",
+          browserURL: "https://explorer.evm.testnet.iotaledger.net/",
         },
       },
     ],

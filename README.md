@@ -1,6 +1,6 @@
 # Defi Lend Borrow
 
-DeFi Lend Borrow is a decentralized finance (DeFi) application that enables users to lend and borrow assets on the Shimmer EVM testnet. The project is built using Solidity, Hardhat, React and ethers.
+DeFi Lend Borrow is a decentralized finance (DeFi) application that enables users to lend and borrow assets on the IOTA EVM testnet. The project is built using Solidity, Hardhat, React and ethers.
 
 ## Prerequisites
 
@@ -46,7 +46,7 @@ Using Hardhat, compile and deploy the contracts on the IOTA EVM testnet, ensurin
 
 ```bash
 npx hardhat compile
-npx hardhat run scripts/deploy.js --network shimmer_evm_testnet
+npx hardhat run scripts/deploy.js --network iota_evm_testnet
 ```
 
 ### 5. Run the Frontend
